@@ -2,8 +2,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:real_time_collaboration_application/auth/screens/signUp.dart';
+import 'package:real_time_collaboration_application/auth/service/authservice.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
+import 'package:real_time_collaboration_application/models/user.dart';
 import 'package:real_time_collaboration_application/utils/TextFormField.dart';
 
 class LoginPage extends StatefulWidget {
@@ -17,10 +19,27 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
-
+   final AuthService authService = AuthService();
   // Move controllers outside build method so they persist
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+ void signin( BuildContext context) {
+     authService.login(
+      context: context,
+      email: emailController.text,
+      password: passwordController.text,
+      callback: (bool success) {
+      if (success) {
+      //onTapLogin(context);
+      print("login Succesfull");
+      } else {
+        
+        print("Password is Incorrect");
+      }
+    },  
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +132,9 @@ class _LoginPageState extends State<LoginPage> {
                           style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
                               backgroundColor: primaryColor),
-                          onPressed: () {},
+                          onPressed: () {
+                            signin(context);
+                          },
                           child: const Text(
                             "Log In",
                             style: RTSTypography.buttonText,
@@ -192,3 +213,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+  void onTapLogin(BuildContext context) {
+    Navigator.pushNamed(context, '/home');
+  }
