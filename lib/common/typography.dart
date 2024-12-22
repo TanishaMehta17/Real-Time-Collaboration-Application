@@ -33,6 +33,12 @@ class RTSTypography {
     fontSize: 16, // Material Design 3 convention
     fontWeight: FontWeight.w400,
   );
+  static const TextStyle smallText2 = TextStyle(
+    fontFamily: 'SFProDisplay',
+    color: textColor,
+    fontSize: 14, // Material Design 3 convention
+    fontWeight: FontWeight.w400,
+  );
    static const TextStyle bold = TextStyle(
     fontFamily: 'SFProDisplay',
     color: primaryColor,

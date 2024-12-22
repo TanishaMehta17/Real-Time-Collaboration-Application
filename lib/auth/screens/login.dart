@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:real_time_collaboration_application/auth/screens/signUp.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
+import 'package:real_time_collaboration_application/team/screens/joinOrCreateTeam.dart';
 import 'package:real_time_collaboration_application/utils/TextFormField.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,13 +15,19 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-
 class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
 
   // Move controllers outside build method so they persist
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +120,10 @@ class _LoginPageState extends State<LoginPage> {
                           style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
                               backgroundColor: primaryColor),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, Joinorcreateteam.routeName);
+                          },
                           child: const Text(
                             "Log In",
                             style: RTSTypography.buttonText,

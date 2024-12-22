@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:real_time_collaboration_application/auth/screens/login.dart';
-import 'package:real_time_collaboration_application/auth/screens/signUp.dart';
+import 'package:provider/provider.dart';
+import 'package:real_time_collaboration_application/kanban/screen/all-list.dart';
+import 'package:real_time_collaboration_application/provider/taskProvider.dart';
 import 'package:real_time_collaboration_application/routes.dart';
 
+
 void main() {
-  runApp(const MyApp());
+   runApp(
+    ChangeNotifierProvider(
+      create: (_) => TaskProvider(),
+      child:const MyApp(),
+    ),
+  );
+
 }
 
 class MyApp extends StatelessWidget {
@@ -15,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(),
-      home: const LoginPage(),
+      home:  AllTask(),
       onGenerateRoute: (settings) => generateRoute(settings),
     );
   }
