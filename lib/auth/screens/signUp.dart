@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:real_time_collaboration_application/auth/service/authservice.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
 import 'package:real_time_collaboration_application/utils/TextFormField.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
@@ -14,6 +15,7 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
+   final AuthService authService = AuthService();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -21,16 +23,17 @@ class _SignUpPageState extends State<SignUpPage> {
       TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
-  @override
-  void dispose() {
-    nameController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    phoneController.dispose();
-    emailController.dispose();
-    super.dispose();
+  Future<bool> Signup(){
+    return authService.register(
+      context: context,
+      username: nameController.text,
+      email: emailController.text,
+      password: passwordController.text,
+      number: phoneController.text,
+      confirmpas: confirmPasswordController.text,
+    );
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,7 +175,13 @@ class _SignUpPageState extends State<SignUpPage> {
                           style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
                               backgroundColor: primaryColor),
-                          onPressed: () {},
+                          onPressed: () async {
+                            bool result = await Signup();
+                            print(result);
+                            if (result) {
+                              Navigator.pushNamed(context, '/login-screen');
+                            }
+                          },
                           child: const Text(
                             "Register",
                             style: RTSTypography.buttonText,
