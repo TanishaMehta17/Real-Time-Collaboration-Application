@@ -1,4 +1,4 @@
-import 'package:real_time_collaboration_application/models/user.dart';
+import 'package:real_time_collaboration_application/model/user.dart';
 import 'package:flutter/material.dart';
 
 class UserProvider extends ChangeNotifier {

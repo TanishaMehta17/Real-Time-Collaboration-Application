@@ -4,7 +4,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:real_time_collaboration_application/models/user.dart';
+import 'package:real_time_collaboration_application/model/user.dart';
 import 'package:real_time_collaboration_application/global_variable.dart';
 import 'package:real_time_collaboration_application/providers/userprovider.dart';
 import 'package:provider/provider.dart';
@@ -38,9 +38,12 @@ class AuthService {
       print(data["data"]["token"]);
       prefs.setString('token', data['data']['token']);
       // ignore: use_build_context_synchronously
-      // final userProvider = Provider.of<UserProvider>(context, listen: false);
-      // userProvider.setUser(data["data"]["user"]);
-      // print(userProvider.user.token);
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      if (data["data"] != null) {
+  userProvider.setUser(data["data"]["user"]);
+}
+
+      print(userProvider.user.token);
       callback(true);
     }
     else{

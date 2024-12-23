@@ -1,20 +1,4 @@
-// import 'package:flutter/material.dart';
-// import 'package:real_time_collaboration_application/model/task.dart';
 
-// class TaskProvider with ChangeNotifier {
-//   final List<Task> _tasks = [];
-
-//   List<Task> get allTasks => _tasks;
-
-//   List<Task> getTasksByCategory(String category) {
-//     return _tasks.where((task) => task.category == category).toList();
-//   }
-
-//   void addTask(Task task) {
-//     _tasks.add(task);
-//     notifyListeners();
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:real_time_collaboration_application/model/task.dart';
 

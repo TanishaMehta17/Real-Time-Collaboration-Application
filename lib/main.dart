@@ -2,36 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/auth/screens/login.dart';
+import 'package:real_time_collaboration_application/auth/service/authservice.dart';
+import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:real_time_collaboration_application/routes.dart';
 
-
-
 void main() {
-   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  runApp(
-    
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
-class MyApp extends StatelessWidget {
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(),
-      home:  LoginPage(),
-      onGenerateRoute: (settings) => generateRoute(settings),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => TaskProvider())
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(),
+        home: LoginPage(), // Ensure this is inside the providers context
+        onGenerateRoute: (settings) => generateRoute(settings),
+      ),
     );
   }
 }

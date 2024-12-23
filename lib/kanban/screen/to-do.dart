@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
-import 'package:real_time_collaboration_application/provider/taskProvider.dart';
+import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/utils/customCard.dart';
 import 'package:real_time_collaboration_application/utils/drawer.dart';
 
