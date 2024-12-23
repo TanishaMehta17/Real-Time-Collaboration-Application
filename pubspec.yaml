@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_svg:
   shared_preferences:
-  provider:
+  provider: ^6.1.2
   http:
 
 dev_dependencies:

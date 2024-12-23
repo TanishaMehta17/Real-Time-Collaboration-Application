@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
 import 'package:real_time_collaboration_application/kanban/screen/all-list.dart';
+import 'package:real_time_collaboration_application/providers/userProvider.dart';
+import 'package:real_time_collaboration_application/team/services/teamService.dart';
 import 'package:real_time_collaboration_application/utils/TextFormField.dart';
 
 class CreateTeam extends StatefulWidget {
@@ -13,10 +16,14 @@ class CreateTeam extends StatefulWidget {
 }
 
 class _CreateTeamState extends State<CreateTeam> {
+  final TeamService teamService = TeamService();
   final TextEditingController teamNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
+ 
+ 
+
   @override
   void dispose() {
     teamNameController.dispose();
@@ -27,6 +34,23 @@ class _CreateTeamState extends State<CreateTeam> {
 
   @override
   Widget build(BuildContext context) {
+     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    void createTeam() {
+   final userprovider = Provider.of<UserProvider>(context, listen: false).user.id;
+  teamService.CreateTeam(context: context, 
+  ManagerId: userprovider, 
+  TeamName: teamNameController.text,
+   password: passwordController.text,
+   callback: (bool success){
+      if(success){
+        print("Team Created");
+        Navigator.pushNamed(context, AllTask.routeName);
+      }
+      else{
+        print("Team not Created");
+      }
+   });
+ }
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -130,7 +154,7 @@ class _CreateTeamState extends State<CreateTeam> {
                               minimumSize: const Size(double.infinity, 50),
                               backgroundColor: primaryColor),
                           onPressed: () {
-                            Navigator.pushNamed(context, AllTask.routeName);
+                            createTeam();
                           },
                           child: const Text(
                             "Create",

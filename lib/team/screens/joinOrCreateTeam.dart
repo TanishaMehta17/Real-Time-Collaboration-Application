@@ -63,7 +63,7 @@ class Joinorcreateteam extends StatelessWidget {
                 
                 InkWell(
                   onTap: () {
-                    Navigator.pushNamed(context, JoinTeam.routeName);
+                    Navigator.pushNamed(context,CreateTeam.routeName );
                   },
                   
                   child: Column(
@@ -105,7 +105,7 @@ class Joinorcreateteam extends StatelessWidget {
 
                 InkWell(
                   onTap: () {
-                    Navigator.pushNamed(context, CreateTeam.routeName);
+                    Navigator.pushNamed(context,JoinTeam.routeName );
                   },
                   child: Column(
                     children: [
