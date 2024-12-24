@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:real_time_collaboration_application/model/user.dart';
 import 'package:real_time_collaboration_application/global_variable.dart';
-import 'package:real_time_collaboration_application/providers/userprovider.dart';
+import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +20,7 @@ class AuthService {
     required String password,
     required OtpVerificationCallback callback,
   }) async {
-    final response = await http.post(
+     http.Response response = await http.post(
       Uri.parse('$uri/api/auth/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -35,13 +35,14 @@ class AuthService {
     //print(data);
     if (data['isSuccess']) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      print(data["data"]["token"]);
-      prefs.setString('token', data['data']['token']);
-if (!context.mounted) return;
+      print(data["token"]);
+      prefs.setString('token', data['token']);
+
 final userProvider = Provider.of<UserProvider>(context, listen: false);
-if (data["data"] != null) {
-  userProvider.setUser(data["data"]["user"]);
-}
+
+  print(response.body);
+  userProvider.setUser(response.body);
+
 
       // print(userProvider.user.token);
       callback(true);
@@ -71,7 +72,7 @@ if (data["data"] != null) {
       token: '',
     );
     print(user.toJson());
-    final response = await http.post(
+    http.Response response = await http.post(
       Uri.parse('$uri/api/auth/signup'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',

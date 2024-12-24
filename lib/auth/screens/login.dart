@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void signin(BuildContext context) {
+  void signin() {
     authService.login(
       context: context,
       email: emailController.text,
@@ -52,10 +52,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
      final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-    return ChangeNotifierProvider<UserProvider>(
-      create: (context) => UserProvider(),
-      builder: (context , child) {
-        final userProvider = Provider.of<UserProvider>(context);
 
         return Scaffold(
           body: Container(
@@ -147,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                                   minimumSize: const Size(double.infinity, 50),
                                   backgroundColor: primaryColor),
                               onPressed: () {
-                                signin(context);
+                                signin();
                               },
                               child: const Text(
                                 "Log In",
@@ -225,9 +221,9 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         );
-      },
-    );
-  }
+      }
+    
+  
 }
 
 void onTapLogin(BuildContext context) {

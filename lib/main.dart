@@ -17,8 +17,11 @@ void main() {
   ]);
 
   runApp(
-    
-   const MyApp());
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_) => UserProvider()),
+      ChangeNotifierProvider(create: (_) => TaskProvider()),
+    ], child:
+   const MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -31,13 +34,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => TaskProvider()),
-      ],
-      child: Consumer<UserProvider>(
-      builder: (context, userProvider, child) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(),
@@ -45,6 +41,5 @@ class _MyAppState extends State<MyApp> {
       onGenerateRoute: (settings) => generateRoute(settings),
     );
   }
-    ));
-}
+
 }
