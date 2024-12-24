@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
 import 'package:real_time_collaboration_application/kanban/screen/all-list.dart';
+import 'package:real_time_collaboration_application/team/services/teamService.dart';
 import 'package:real_time_collaboration_application/utils/TextFormField.dart';
 
 class JoinTeam extends StatefulWidget {
@@ -14,9 +15,27 @@ class JoinTeam extends StatefulWidget {
 
 
 class _JoinTeamState extends State<JoinTeam> {
+  final TeamService teamService = TeamService();
   final TextEditingController teamNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
+
+  void joinTeam(BuildContext context) {
+    // Call the join team function here
+    teamService.JoinTeam(
+      context: context,
+      TeamName: teamNameController.text,
+      password: passwordController.text,
+      callback: (bool success) {
+        if (success) {
+          print("Team Joined");
+          Navigator.pushNamed(context, AllTask.routeName);
+        } else {
+          print("Team not Joined");
+        }
+      },
+    );
+  }
 
   @override
   void dispose() {
