@@ -35,7 +35,7 @@ class _CreateTeamState extends State<CreateTeam> {
   @override
   Widget build(BuildContext context) {
      final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-    void createTeam() {
+    Future<void> createTeam() async {
    final userprovider = Provider.of<UserProvider>(context, listen: false).user.id;
   teamService.CreateTeam(context: context, 
   ManagerId: userprovider, 

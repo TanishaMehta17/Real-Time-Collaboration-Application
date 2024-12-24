@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:real_time_collaboration_application/global_variable.dart';
-import 'package:real_time_collaboration_application/providers/userprovider.dart';
+import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
