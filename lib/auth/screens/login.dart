@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   // Move controllers outside build method so they persist
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
+ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void dispose() {
     emailController.dispose();
@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void signin() {
+  void signin(BuildContext context) {
     authService.login(
       context: context,
       email: emailController.text,
@@ -51,7 +51,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    
+ 
 
         return Scaffold(
           body: Container(
@@ -143,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                                   minimumSize: const Size(double.infinity, 50),
                                   backgroundColor: primaryColor),
                               onPressed: () {
-                                signin();
+                                signin(context);
                               },
                               child: const Text(
                                 "Log In",
@@ -223,8 +224,8 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     
-  
-}
+  }
+
 
 void onTapLogin(BuildContext context) {
   Navigator.pushNamed(context, '/home');
