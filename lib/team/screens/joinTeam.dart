@@ -19,8 +19,8 @@ class _JoinTeamState extends State<JoinTeam> {
   final TextEditingController teamNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
-
-  void joinTeam(BuildContext context) {
+   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  Future<void> joinTeam() async{
     // Call the join team function here
     teamService.JoinTeam(
       context: context,
@@ -136,7 +136,7 @@ class _JoinTeamState extends State<JoinTeam> {
                               minimumSize: const Size(double.infinity, 50),
                               backgroundColor: primaryColor),
                           onPressed: () {
-                              Navigator.pushNamed(context, AllTask.routeName);
+                            joinTeam();
                           },
                           child: const Text(
                             "Join",

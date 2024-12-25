@@ -20,7 +20,7 @@ class AuthService {
     required String password,
     required OtpVerificationCallback callback,
   }) async {
-     http.Response response = await http.post(
+    final response = await http.post(
       Uri.parse('$uri/api/auth/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -33,23 +33,16 @@ class AuthService {
 
     Map<String, dynamic> data = json.decode(response.body);
     //print(data);
-    if (data['isSuccess']) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      print(data["token"]);
-      prefs.setString('token', data['token']);
-
+SharedPreferences prefs = await SharedPreferences.getInstance();
+print(data["token"]);
+await prefs.setString('token', data['token']);
+if (!context.mounted) return;
 final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-  print(response.body);
-  userProvider.setUser(response.body);
+userProvider.setUser(response.body);
 
-
-      // print(userProvider.user.token);
-      callback(true);
-    }
-    else{
-      callback(false);
-    }
+// print(userProvider.user.token);
+callback(true);
   }
 
   void updateUser(BuildContext context, dynamic userData) {
@@ -72,7 +65,7 @@ final userProvider = Provider.of<UserProvider>(context, listen: false);
       token: '',
     );
     print(user.toJson());
-    http.Response response = await http.post(
+    final response = await http.post(
       Uri.parse('$uri/api/auth/signup'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -86,6 +79,44 @@ final userProvider = Provider.of<UserProvider>(context, listen: false);
       return true;
     } else {
       return false;
+    }
+  }
+  // get user data
+  void getUserData(
+    BuildContext context,
+  ) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        prefs.setString('token', '');
+      }
+
+      var tokenRes = await http.post(
+        Uri.parse('$uri/api/auth/TokenisValid'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'token': token!
+        },
+      );
+
+      var response = jsonDecode(tokenRes.body);
+      print(response);
+      if (response == true) {
+        http.Response userRes = await http.get(
+          Uri.parse('$uri/api/auth/'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'token': token
+          },
+        );
+        print(userRes.body);
+        var userProvider = Provider.of<UserProvider>(context, listen: false);
+        userProvider.setUser(userRes.body);
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

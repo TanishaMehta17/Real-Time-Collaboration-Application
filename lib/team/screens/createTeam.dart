@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
 import 'package:real_time_collaboration_application/kanban/screen/all-list.dart';
+import 'package:real_time_collaboration_application/model/user.dart';
 import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:real_time_collaboration_application/team/services/teamService.dart';
 import 'package:real_time_collaboration_application/utils/TextFormField.dart';
@@ -21,24 +22,19 @@ class _CreateTeamState extends State<CreateTeam> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
  
- 
+ Future<void> createTeam() async {
+   final userprovider = Provider.of<UserProvider>(context,listen: false);
+    
+   print(userprovider.user.username);
+   print(userprovider.user.id);
+    print(userprovider.user.token);
+   print(userprovider.user.email);
+  print(userprovider.user.toJson());
 
-  @override
-  void dispose() {
-    teamNameController.dispose();
-    passwordController.dispose();
-    descriptionController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-    Future<void> createTeam() async {
-   final userprovider = Provider.of<UserProvider>(context, listen: false).user.id;
   teamService.CreateTeam(context: context, 
-  ManagerId: userprovider, 
+  ManagerId: userprovider.user.id, 
   TeamName: teamNameController.text,
    password: passwordController.text,
    callback: (bool success){
@@ -51,6 +47,20 @@ class _CreateTeamState extends State<CreateTeam> {
       }
    });
  }
+ 
+
+  @override
+  void dispose() {
+    teamNameController.dispose();
+    passwordController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+   
+    
     return Scaffold(
       body: Container(
         width: double.infinity,

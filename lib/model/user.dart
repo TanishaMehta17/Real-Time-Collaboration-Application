@@ -34,7 +34,7 @@
 
     factory User.fromMap(Map<String, dynamic> map) {
       return User(
-        id: map['_id'] ?? '',
+        id: map['id'] ?? '',
         username: map['username'] ?? '',
         email: map['email'] ?? '',
         password: map['password'] ?? '',
