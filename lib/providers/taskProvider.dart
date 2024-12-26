@@ -1,8 +1,30 @@
-
 import 'package:flutter/material.dart';
 import 'package:real_time_collaboration_application/model/task.dart';
 
 class TaskProvider with ChangeNotifier {
+  Task _task = Task(
+    bodyText1: '',
+    bodyText2: '',
+    heading1: '',
+    heading2: '',
+    name: '',
+    date: '',
+    category: '',
+    membersName: List.empty(),
+  );
+  
+  Task get task => task;
+
+  void setTask(String task) {
+    _task = Task.fromJson(task);
+    notifyListeners();
+  }
+
+  void setTaskFromModel(Task task) {
+    _task = task;
+    notifyListeners();
+  }
+
   List<Task> _allTasks = [];
   List<Task> _toDoTasks = [];
   List<Task> _backlogTasks = [];

@@ -280,6 +280,7 @@ class _AllTaskState extends State<AllTask> {
                             name: name.text,
                             date: selectedDate?.toString().split(' ')[0] ?? '',
                             category: selectedCategory,
+                            membersName: []//ryt now passing an empty member list until the api is executed
                           );
                           taskProvider.addTask(newTask); // Add the new task
                           _resetForm(); // Reset the form fields

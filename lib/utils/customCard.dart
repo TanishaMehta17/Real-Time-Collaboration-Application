@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:real_time_collaboration_application/chat/screen/chat_screen.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
 import 'package:real_time_collaboration_application/model/task.dart';
@@ -75,7 +76,11 @@ class CustomCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.chat),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, ChatScreen.routeName);
+                      },
+                      icon: const Icon(Icons.chat)),
                   const SizedBox(width: 8.0),
                   Text(task.name,
                       style:

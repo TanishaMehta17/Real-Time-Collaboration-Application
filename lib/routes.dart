@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:real_time_collaboration_application/auth/screens/login.dart';
 import 'package:real_time_collaboration_application/auth/screens/signUp.dart';
+import 'package:real_time_collaboration_application/chat/screen/chat_screen.dart';
 import 'package:real_time_collaboration_application/kanban/screen/all-list.dart';
 import 'package:real_time_collaboration_application/kanban/screen/baclog.dart';
 import 'package:real_time_collaboration_application/kanban/screen/review.dart';
@@ -55,6 +56,11 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
       return MaterialPageRoute(
         settings: routeSettings,
         builder: (_) =>  AllTask(),
+      );
+       case ChatScreen.routeName:
+      return MaterialPageRoute(
+        settings: routeSettings,
+        builder: (_) =>  ChatScreen(),
       );
     default:
       return MaterialPageRoute(

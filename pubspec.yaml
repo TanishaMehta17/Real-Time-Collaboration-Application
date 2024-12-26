@@ -38,8 +38,10 @@ dependencies:
   flutter_svg:
   shared_preferences:
   provider: ^6.1.2
+  audioplayers:
+  swipe_to: 
   http:
-
+  emoji_picker_flutter:
 dev_dependencies:
   flutter_test:
     sdk: flutter
