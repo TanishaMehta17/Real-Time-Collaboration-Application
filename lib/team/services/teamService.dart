@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:real_time_collaboration_application/global_variable.dart';
+import 'package:real_time_collaboration_application/providers/teamProvider.dart';
 import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -34,6 +35,8 @@ class TeamService {
 
     Map<String, dynamic> data = json.decode(response.body);
     debugPrint(data.toString());
+    final teamprovider = Provider.of<TeamProvider>(context, listen: false);
+    teamprovider.setTeam(response.body);
     if (data['isSuccess']) {
       callback(true);
     } else {
@@ -72,6 +75,8 @@ class TeamService {
     );
 
     Map<String, dynamic> data = json.decode(response.body);
+    final teamprovider = Provider.of<TeamProvider>(context, listen: false);
+    teamprovider.setTeam(response.body);
     debugPrint(data.toString());
     if (data['isSuccess']) {
       callback(true);

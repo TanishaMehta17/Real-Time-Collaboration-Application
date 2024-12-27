@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/auth/screens/login.dart';
 import 'package:real_time_collaboration_application/auth/service/authservice.dart';
+import 'package:real_time_collaboration_application/chat/screen/chat_screen.dart';
 import 'package:real_time_collaboration_application/model/user.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
+import 'package:real_time_collaboration_application/providers/teamProvider.dart';
 import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:real_time_collaboration_application/routes.dart';
 import 'package:real_time_collaboration_application/team/screens/joinOrCreateTeam.dart';
@@ -22,6 +24,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_)=> TeamProvider()),
       ],
       child: const MyApp(),
     ),
@@ -52,10 +55,12 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(),
-      home: isUserLoggedIn
-          ? Joinorcreateteam()
-          : const LoginPage(), // Correct context access for providers
+      // home: isUserLoggedIn
+      //     ? Joinorcreateteam()
+      //     : const LoginPage(), // Correct context access for providers
+      home: ChatScreen(),
       onGenerateRoute: (settings) => generateRoute(settings),
     );
   }
