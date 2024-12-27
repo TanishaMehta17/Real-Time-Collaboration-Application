@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 class Task {
+  final String id;
   final String heading1;
   final String heading2;
   final String bodyText1;
@@ -10,7 +11,9 @@ class Task {
   final String category;
   final List<String> membersName;
   Task(
-      {required this.heading1,
+      {
+      required this.id,
+        required this.heading1,
       required this.heading2,
       required this.bodyText1,
       required this.bodyText2,
@@ -34,6 +37,7 @@ class Task {
 
     factory Task.fromMap(Map<String, dynamic> map) {
       return Task(
+        id: map['id'] ?? '',
         heading1: map['heading1'] ?? '',
         heading2: map['heading2'] ?? '',
         bodyText1: map['bodyText1'] ?? '',
@@ -50,6 +54,7 @@ class Task {
     factory Task.fromJson(String source) => Task.fromMap(json.decode(source));
 
     Task copyWith({
+      String? id,
       String? heading1,
       String? heading2,
       String? bodyText1,
@@ -60,6 +65,7 @@ class Task {
       List<String>? membersName
     }) {
       return Task(
+        id: id ?? this.id,
         heading1:heading1 ?? this.heading1,
         heading2:heading2 ?? this.heading2,
         bodyText1:bodyText1?? this.bodyText1,

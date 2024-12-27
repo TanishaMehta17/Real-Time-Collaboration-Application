@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
+import 'package:real_time_collaboration_application/kanban/services/taskservices.dart';
 import 'package:real_time_collaboration_application/model/task.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
+import 'package:real_time_collaboration_application/providers/teamProvider.dart';
 import 'package:real_time_collaboration_application/utils/customCard.dart';
 import 'package:real_time_collaboration_application/utils/drawer.dart';
 
@@ -20,6 +22,7 @@ class _AllTaskState extends State<AllTask> {
   final TextEditingController bodyText1 = TextEditingController();
   final TextEditingController bodyText2 = TextEditingController();
   final TextEditingController name = TextEditingController();
+  TaskService taskService = TaskService();
   DateTime? selectedDate;
   String selectedCategory = 'To-Do';
 
@@ -35,6 +38,13 @@ class _AllTaskState extends State<AllTask> {
         selectedDate = picked;
       });
     }
+  }
+  List<String> membersName = [];
+
+  @override
+  void initState() {
+    super.initState();
+    membersName = Provider.of<TeamProvider>(context, listen: false).team.members;
   }
 
   @override
@@ -57,11 +67,40 @@ class _AllTaskState extends State<AllTask> {
       selectedDate = null;
     });
   }
+   void addTasks() {
+      taskService.CreateTask(
+          context: context,
+          // heading1: heading1.text,
+          TaskType: heading2.text,
+          TaskName: bodyText1.text,
+          TaskDescription: bodyText2.text,
+          TaskStatus: selectedCategory,
+          membersName: [], 
+          callback: (bool success) { 
+            if (success) {
+              print("Task Created");
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Task not created',
+                                style: RTSTypography.smallText2
+                                    .copyWith(color: white),
+                              ),
+                              backgroundColor: errorPrimaryColor,
+                            ),
+                          );
+              
+              print("Task not Created");
+            }
+           });
+    }
 
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+   
 
     // Always display tasks from allTasks list for the "All Tasks" screen
     List<Task> filteredTasks = taskProvider.allTasks; // Get all tasks here
@@ -262,27 +301,30 @@ class _AllTaskState extends State<AllTask> {
                             name.text.isEmpty) {
                           // If all fields are empty, show a Snackbar
                           ScaffoldMessenger.of(context).showSnackBar(
-                             SnackBar(
+                            SnackBar(
                               content: Text(
                                 'Please enter details',
-                                style: RTSTypography.smallText2.copyWith(color: white),
+                                style: RTSTypography.smallText2
+                                    .copyWith(color: white),
                               ),
                               backgroundColor: errorPrimaryColor,
                             ),
                           );
                         } else {
                           // Proceed to create a new task if at least one field is filled
-                          final newTask = Task(
-                            heading1: heading1.text,
-                            heading2: heading2.text,
-                            bodyText1: bodyText1.text,
-                            bodyText2: bodyText2.text,
-                            name: name.text,
-                            date: selectedDate?.toString().split(' ')[0] ?? '',
-                            category: selectedCategory,
-                            membersName: []//ryt now passing an empty member list until the api is executed
-                          );
-                          taskProvider.addTask(newTask); // Add the new task
+                          // final newTask = Task(
+
+                          //   heading1: heading1.text,
+                          //   heading2: heading2.text,
+                          //   bodyText1: bodyText1.text,
+                          //   bodyText2: bodyText2.text,
+                          //   name: name.text,
+                          //   date: selectedDate?.toString().split(' ')[0] ?? '',
+                          //   category: selectedCategory,
+                          //   membersName: []//ryt now passing an empty member list until the api is executed
+                          // );
+                          // taskProvider.addTask(newTask); // Add the new task
+
                           _resetForm(); // Reset the form fields
                           Navigator.pop(context); // Close the dialog
                         }

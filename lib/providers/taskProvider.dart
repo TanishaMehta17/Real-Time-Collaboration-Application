@@ -3,6 +3,7 @@ import 'package:real_time_collaboration_application/model/task.dart';
 
 class TaskProvider with ChangeNotifier {
   Task _task = Task(
+    id: '',
     bodyText1: '',
     bodyText2: '',
     heading1: '',

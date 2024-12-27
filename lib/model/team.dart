@@ -5,12 +5,14 @@ class Team {
   final String name;
   final String password;
   final String managerId;
+  final List<String> members;
 
   Team({
     required this.id,
     required this.name,
     required this.password,
     required this.managerId,
+    required this.members,
   });
 
   Map<String, dynamic> toMap() {
@@ -19,15 +21,17 @@ class Team {
       'name': name,
       'password': password,
       'managerId': managerId,
+      'members': members,
     };
   }
 
   factory Team.fromMap(Map<String, dynamic> map) {
     return Team(
-      id: map['_id'] ?? '',
+      id: map['id'] ?? '',
       name: map['name'] ?? '',
       password: map['password'] ?? '',
       managerId: map['managerId'] ?? '',
+      members: List<String>.from(map['members'] ?? []),
     );
   }
 
@@ -40,12 +44,14 @@ class Team {
     String? name,
     String? password,
     String? managerId,
+    List<String>? members,
   }) {
     return Team(
       id: id ?? this.id,
       name: name ?? this.name,
       password: password ?? this.password,
       managerId: managerId ?? this.managerId,
+      members: members ?? this.members,
     );
   }
 }
