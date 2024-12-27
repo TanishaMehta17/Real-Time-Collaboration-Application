@@ -21,7 +21,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
+
 
   Future<bool> Signup(){
     return authService.register(
@@ -29,7 +29,6 @@ class _SignUpPageState extends State<SignUpPage> {
       username: nameController.text,
       email: emailController.text,
       password: passwordController.text,
-      number: phoneController.text,
       confirmpas: confirmPasswordController.text,
     );
   }
@@ -95,19 +94,6 @@ class _SignUpPageState extends State<SignUpPage> {
                             } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
                                 .hasMatch(value)) {
                               return 'Please enter a valid email address';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        CustomTextField(
-                          controller: phoneController,
-                          labelText: "Phone Number",
-                          hintText: "Enter your phone number",
-                          keyboardType: TextInputType.phone,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your phone number';
                             }
                             return null;
                           },

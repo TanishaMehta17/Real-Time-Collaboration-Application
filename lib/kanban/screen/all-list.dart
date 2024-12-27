@@ -6,6 +6,7 @@ import 'package:real_time_collaboration_application/kanban/services/taskservices
 import 'package:real_time_collaboration_application/model/task.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/providers/teamProvider.dart';
+
 import 'package:real_time_collaboration_application/utils/customCard.dart';
 import 'package:real_time_collaboration_application/utils/drawer.dart';
 
@@ -21,9 +22,10 @@ class _AllTaskState extends State<AllTask> {
   final TextEditingController heading2 = TextEditingController();
   final TextEditingController bodyText1 = TextEditingController();
   final TextEditingController bodyText2 = TextEditingController();
-  final TextEditingController name = TextEditingController();
   TaskService taskService = TaskService();
-  DateTime? selectedDate;
+  DateTime? selectedDate = DateTime.now();
+  List<String> selectedMembers = [];
+  final _formKey = GlobalKey<FormState>();
   String selectedCategory = 'To-Do';
 
   Future<void> _selectDate(BuildContext context) async {
@@ -39,12 +41,14 @@ class _AllTaskState extends State<AllTask> {
       });
     }
   }
+
   List<String> membersName = [];
 
   @override
   void initState() {
     super.initState();
-    membersName = Provider.of<TeamProvider>(context, listen: false).team.members;
+    membersName =
+        Provider.of<TeamProvider>(context, listen: false).team.members;
   }
 
   @override
@@ -53,7 +57,6 @@ class _AllTaskState extends State<AllTask> {
     heading2.dispose();
     bodyText1.dispose();
     bodyText2.dispose();
-    name.dispose();
     super.dispose();
   }
 
@@ -62,45 +65,46 @@ class _AllTaskState extends State<AllTask> {
     heading2.clear();
     bodyText1.clear();
     bodyText2.clear();
-    name.clear();
+
     setState(() {
       selectedDate = null;
+      selectedMembers.clear();
     });
   }
-   void addTasks() {
-      taskService.CreateTask(
-          context: context,
-          // heading1: heading1.text,
-          TaskType: heading2.text,
-          TaskName: bodyText1.text,
-          TaskDescription: bodyText2.text,
-          TaskStatus: selectedCategory,
-          membersName: [], 
-          callback: (bool success) { 
-            if (success) {
-              print("Task Created");
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Task not created',
-                                style: RTSTypography.smallText2
-                                    .copyWith(color: white),
-                              ),
-                              backgroundColor: errorPrimaryColor,
-                            ),
-                          );
-              
-              print("Task not Created");
-            }
-           });
-    }
+
+  void addTasks() {
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    taskService.CreateTask(
+        context: context,
+        TaskType: "${heading1.text} and ${heading2.text}",
+        TaskName: bodyText1.text,
+        TaskDescription: bodyText2.text,
+        TaskStatus: selectedCategory,
+        membersName: [],
+        teamId: teamProvider.team.id,
+        callback: (bool success) {
+          if (success) {
+            print("Task Created");
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Task not created',
+                  style: RTSTypography.smallText2.copyWith(color: white),
+                ),
+                backgroundColor: errorPrimaryColor,
+              ),
+            );
+
+            print("Task not Created");
+          }
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-   
 
     // Always display tasks from allTasks list for the "All Tasks" screen
     List<Task> filteredTasks = taskProvider.allTasks; // Get all tasks here
@@ -143,204 +147,296 @@ class _AllTaskState extends State<AllTask> {
             builder: (context) => AlertDialog(
               title: const Text('Add New Task'),
               content: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: heading1,
-                      decoration: InputDecoration(
-                        labelText: 'Heading 1',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: heading2,
-                      decoration: InputDecoration(
-                        labelText: 'Heading 2',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: bodyText1,
-                      decoration: InputDecoration(
-                        labelText: 'Body Text 1',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: bodyText2,
-                      decoration: InputDecoration(
-                        labelText: 'Body Text 2',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: name,
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: () => _selectDate(context),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 10.0),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              selectedDate == null
-                                  ? 'Select Date'
-                                  : selectedDate.toString().split(' ')[0],
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const Icon(Icons.calendar_today,
-                                color: Colors.blueAccent),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: DropdownButtonFormField<String>(
-                        value: selectedCategory,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedCategory = value!;
-                          });
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: heading1,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Heading1 cannot be empty',
+                                  style: RTSTypography.smallText2
+                                      .copyWith(color: white),
+                                ),
+                                backgroundColor: errorPrimaryColor,
+                              ),
+                            );
+                            return ''; // Return empty string to show the error
+                          }
+                          return null;
                         },
                         decoration: InputDecoration(
-                          labelText: 'Select Category',
-                          labelStyle: const TextStyle(
-                            color: textColor2, // Customize the label color
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 12.0, horizontal: 16.0),
+                          labelText: 'Heading 1',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: textColor2, // Customize border color
-                              width: 2,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: textColor2, // Focused border color
-                              width: 2,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Colors.grey.withOpacity(0.5),
-                              width: 2,
-                            ),
                           ),
                         ),
-                        items: ['To-Do', 'Backlog', 'Review']
-                            .map((category) => DropdownMenuItem<String>(
-                                  value: category,
-                                  child: Row(
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: heading2,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Heading2 cannot be empty',
+                                  style: RTSTypography.smallText2
+                                      .copyWith(color: white),
+                                ),
+                                backgroundColor: errorPrimaryColor,
+                              ),
+                            );
+                            return ''; // Return empty string to show the error
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Heading 2',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: bodyText1,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'BodyText1 cannot be empty',
+                                  style: RTSTypography.smallText2
+                                      .copyWith(color: white),
+                                ),
+                                backgroundColor: errorPrimaryColor,
+                              ),
+                            );
+                            return ''; // Return empty string to show the error
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Body Text 1',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: bodyText2,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'BodyText2 cannot be empty',
+                                  style: RTSTypography.smallText2
+                                      .copyWith(color: white),
+                                ),
+                                backgroundColor: errorPrimaryColor,
+                              ),
+                            );
+                            return ''; // Return empty string to show the error
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Body Text 2',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        hint: const Text("Select Members"),
+                        value:
+                            null, // Leave value as null because we manage selection with checkboxes
+                        onChanged: (value) {},
+                        items: membersName.map((String member) {
+                          return DropdownMenuItem<String>(
+                            value: member,
+                            child: StatefulBuilder(
+                              builder: (context, setState) {
+                                return CheckboxListTile(
+                                  title: Row(
                                     children: [
-                                      Icon(
-                                        category == selectedCategory
-                                            ? Icons.check_circle
-                                            : Icons.radio_button_unchecked,
-                                        color: category == selectedCategory
-                                            ? textColor2
-                                            : boxShadow,
-                                      ),
-                                      const SizedBox(width: 8),
+                                      const SizedBox(width: 8.0),
                                       Text(
-                                        category,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: category == selectedCategory
-                                              ? textColor2
-                                              : textColor,
-                                          fontWeight:
-                                              category == selectedCategory
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                        ),
+                                        member,
+                                        style: const TextStyle(
+                                            color: Colors
+                                                .black), // Display member name
                                       ),
                                     ],
                                   ),
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Check if all fields are empty
-                        if (heading1.text.isEmpty &&
-                            heading2.text.isEmpty &&
-                            bodyText1.text.isEmpty &&
-                            bodyText2.text.isEmpty &&
-                            name.text.isEmpty) {
-                          // If all fields are empty, show a Snackbar
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Please enter details',
-                                style: RTSTypography.smallText2
-                                    .copyWith(color: white),
-                              ),
-                              backgroundColor: errorPrimaryColor,
+                                  value: selectedMembers.contains(
+                                      member), // Checked state based on whether the member is selected
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      if (value == true) {
+                                        // Add member to the selectedMembers list if checked
+                                        selectedMembers.add(member);
+                                      } else {
+                                        // Remove member from the selectedMembers list if unchecked
+                                        selectedMembers.remove(member);
+                                      }
+                                    });
+                                  },
+                                  checkColor:
+                                      white, // Set the color of the tick mark (checked state)
+                                  activeColor: textColor2,
+                                  // Set the background color of the checkbox when selected (blue)
+                                  side: const BorderSide(
+                                      color: Colors.grey,
+                                      width:
+                                          1.5), // Border color and width for checkbox
+                                );
+                              },
                             ),
                           );
-                        } else {
-                          // Proceed to create a new task if at least one field is filled
-                          // final newTask = Task(
-
-                          //   heading1: heading1.text,
-                          //   heading2: heading2.text,
-                          //   bodyText1: bodyText1.text,
-                          //   bodyText2: bodyText2.text,
-                          //   name: name.text,
-                          //   date: selectedDate?.toString().split(' ')[0] ?? '',
-                          //   category: selectedCategory,
-                          //   membersName: []//ryt now passing an empty member list until the api is executed
-                          // );
-                          // taskProvider.addTask(newTask); // Add the new task
-
-                          _resetForm(); // Reset the form fields
-                          Navigator.pop(context); // Close the dialog
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: textColor2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () => _selectDate(context),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12.0, horizontal: 10.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                selectedDate == null
+                                    ? 'Select Date'
+                                    : selectedDate.toString().split(' ')[0],
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const Icon(Icons.calendar_today,
+                                  color: Colors.blueAccent),
+                            ],
+                          ),
                         ),
                       ),
-                      child: const Text(
-                        'Submit',
-                        style: RTSTypography.buttonText,
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: DropdownButtonFormField<String>(
+                          value: selectedCategory,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedCategory = value!;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Select Category',
+                            labelStyle: const TextStyle(
+                              color: textColor2, // Customize the label color
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 12.0, horizontal: 16.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: textColor2, // Customize border color
+                                width: 2,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: textColor2, // Focused border color
+                                width: 2,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.grey.withOpacity(0.5),
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          items: ['To-Do', 'Backlog', 'Review']
+                              .map((category) => DropdownMenuItem<String>(
+                                    value: category,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          category == selectedCategory
+                                              ? Icons.check_circle
+                                              : Icons.radio_button_unchecked,
+                                          color: category == selectedCategory
+                                              ? textColor2
+                                              : boxShadow,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          category,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: category == selectedCategory
+                                                ? textColor2
+                                                : textColor,
+                                            fontWeight:
+                                                category == selectedCategory
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
                       ),
-                    ),
-                  ],
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            // If validation passes, proceed with adding the task
+                            addTasks();
+                            print(selectedMembers);
+                            _resetForm();
+                            Navigator.pop(context);
+                          } else {
+                            // If validation fails, show the Snackbar
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Please fill all required fields',
+                                  style: RTSTypography.smallText2
+                                      .copyWith(color: white),
+                                ),
+                                backgroundColor: errorPrimaryColor,
+                              ),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: textColor2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          'Submit',
+                          style: RTSTypography.buttonText,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

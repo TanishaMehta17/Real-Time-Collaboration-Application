@@ -19,8 +19,9 @@ class TaskService {
     required String TaskName,
     required String TaskDescription,
     required String TaskStatus,
+    required String teamId,
     required String TaskType,
-    required List<String> membersName,
+    required List<String> membersName, //selected members names
     required Result callback,
   }) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -36,6 +37,7 @@ class TaskService {
         'description': TaskDescription,
         'status':TaskStatus,
         'type':TaskType,
+        'teamId':teamId,
         'membersName':membersName.toString(),
       }),
     );
