@@ -13,7 +13,7 @@ class Review extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
-    final toDoTasks = taskProvider.getTasksByCategory('Review');
+    final reviewTasks = taskProvider.getTasksByCategory('review');
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
       appBar: AppBar(
@@ -38,9 +38,17 @@ class Review extends StatelessWidget {
         ),
       ),
       drawer: const CustomDrawer(),
-      body: ListView(
-        children: toDoTasks.map((task) => CustomCard(task: task)).toList(),
-      ),
+      body: reviewTasks.isNotEmpty
+          ? ListView.builder(
+              itemCount: reviewTasks.length,
+              itemBuilder: (context, index) => CustomCard(task: reviewTasks[index]),
+            )
+          : const Center(
+              child: Text(
+                'No Review Tasks',
+                style: RTSTypography.buttonText,
+              ),
+            ),
     );
   }
 }

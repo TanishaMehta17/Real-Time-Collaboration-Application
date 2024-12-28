@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
+import 'package:real_time_collaboration_application/model/task.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/utils/customCard.dart';
 import 'package:real_time_collaboration_application/utils/drawer.dart';
@@ -14,7 +15,7 @@ class Backlog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
-    final toDoTasks = taskProvider.getTasksByCategory('Backlog');
+    var backlogTasks = taskProvider.getTasksByCategory('backlog');
 
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
@@ -40,9 +41,17 @@ class Backlog extends StatelessWidget {
         ),
       ),
       drawer: const CustomDrawer(),
-      body: ListView(
-        children: toDoTasks.map((task) => CustomCard(task: task)).toList(),
-      ),
+       body: backlogTasks.isNotEmpty
+          ? ListView.builder(
+              itemCount: backlogTasks.length,
+              itemBuilder: (context, index) => CustomCard(task: backlogTasks[index]),
+            )
+          : const Center(
+              child: Text(
+                'No Backlog Tasks',
+                style: RTSTypography.buttonText,
+              ),
+            ),
     );
   }
 }

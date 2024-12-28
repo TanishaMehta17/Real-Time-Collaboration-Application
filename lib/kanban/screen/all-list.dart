@@ -76,8 +76,9 @@ class _AllTaskState extends State<AllTask> {
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
     taskService.CreateTask(
         context: context,
-        TaskType: "${heading1.text} and ${heading2.text}",
-        TaskName: bodyText1.text,
+        TaskType: heading1.text,
+        TaskDecscription1: bodyText1.text,
+        TaskName: heading2.text,
         TaskDescription: bodyText2.text,
         TaskStatus: selectedCategory,
         membersName: [],

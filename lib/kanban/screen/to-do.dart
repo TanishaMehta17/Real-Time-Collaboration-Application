@@ -13,7 +13,7 @@ class ToDoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
-    final toDoTasks = taskProvider.getTasksByCategory('To-Do');
+    final toDoTasks = taskProvider.getTasksByCategory('to-do');
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
       appBar: AppBar(
@@ -38,9 +38,17 @@ class ToDoScreen extends StatelessWidget {
         ),
       ),
       drawer: const CustomDrawer(),
-      body: ListView(
-        children: toDoTasks.map((task) => CustomCard(task: task)).toList(),
-      ),
+      body: toDoTasks.isNotEmpty
+          ? ListView.builder(
+              itemCount: toDoTasks.length,
+              itemBuilder: (context, index) => CustomCard(task: toDoTasks[index]),
+            )
+          : const Center(
+              child: Text(
+                'No To-Do Tasks',
+                style: RTSTypography.buttonText,
+              ),
+            ),
     );
   }
 }

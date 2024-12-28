@@ -9,21 +9,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-
 typedef Result = void Function(bool success);
 
 class TaskService {
-
   Future<void> CreateTask({
     required BuildContext context,
     required String TaskName,
+    required String TaskDecscription1,
     required String TaskDescription,
     required String TaskStatus,
     required String teamId,
     required String TaskType,
     required List<String> membersName, //selected members names
     required Result callback,
-  }) async{
+  }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
     final response = await http.post(
@@ -33,24 +32,35 @@ class TaskService {
         'token': token!,
       },
       body: jsonEncode(<String, String>{
-        'title':TaskName,
+        'title': TaskName,
+        'description1': TaskDecscription1,
         'description': TaskDescription,
-        'status':TaskStatus,
-        'type':TaskType,
-        'teamId':teamId,
-        'membersName':membersName.toString(),
+        'status': TaskStatus,
+        'type': TaskType,
+        'teamId': teamId,
+        'membersName': membersName.toString(),
       }),
     );
-
-    Map<String, dynamic> data = json.decode(response.body);
+ final data = json.decode(response.body);
     debugPrint(data.toString());
-    final taskprovider = Provider.of<TaskProvider>(context, listen: false);
-    taskprovider.setTask(response.body);
+
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
     if (data['isSuccess']) {
+      taskProvider.setTask(data['tasks']); // Update the task list in TaskProvider
       callback(true);
     } else {
       callback(false);
     }
   }
-
 }
+//     Map<String, dynamic> data = json.decode(response.body);
+//     debugPrint(data.toString());
+//     final taskprovider = Provider.of<TaskProvider>(context, listen: false);
+//     taskprovider.setTask(response.body);
+//     if (data['isSuccess']) {
+//       callback(true);
+//     } else {
+//       callback(false);
+//     }
+//   }
+// }
