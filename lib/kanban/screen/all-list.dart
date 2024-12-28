@@ -79,6 +79,7 @@ class _AllTaskState extends State<AllTask> {
         TaskType: heading1.text,
         TaskDecscription1: bodyText1.text,
         TaskName: heading2.text,
+        date:selectedDate.toString(),
         TaskDescription: bodyText2.text,
         TaskStatus: selectedCategory,
         membersName: [],
