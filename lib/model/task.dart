@@ -10,70 +10,74 @@ class Task {
   final String date;
   final String category;
   final List<String> membersName;
-  Task(
-      {
-      required this.id,
-        required this.heading1,
-      required this.heading2,
-      required this.bodyText1,
-      required this.bodyText2,
-      required this.name,
-      required this.date,
-      required this.category,
-      required this.membersName
-      });
-     Map<String, dynamic> toMap() {
-      return {
-        'heading1':heading1,
-        'heading2':heading2,
-        'bodyText1':bodyText1,
-        'bodyText2':bodyText2,
-        'name':name,
-        'date':date,
-        'category':category,
-        'membersName':membersName
-      };
-    }
 
-    factory Task.fromMap(Map<String, dynamic> map) {
-      return Task(
-        id: map['id'] ?? '',
-        heading1: map['heading1'] ?? '',
-        heading2: map['heading2'] ?? '',
-        bodyText1: map['bodyText1'] ?? '',
-        bodyText2: map['bedyText2'] ?? '',
-        category: map['category']??'',
-        membersName: map['membersName']??'',
-        name: map['name'] ?? '',
-        date: map['date'] ?? '',
-      );
-    }
+  Task({
+    required this.id,
+    required this.heading1,
+    required this.heading2,
+    required this.bodyText1,
+    required this.bodyText2,
+    required this.name,
+    required this.date,
+    required this.category,
+    required this.membersName,
+  });
 
-    String toJson() => json.encode(toMap());
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'heading1': heading1,
+      'heading2': heading2,
+      'bodyText1': bodyText1,
+      'bodyText2': bodyText2,
+      'name': name,
+      'date': date,
+      'category': category,
+      'membersName': membersName,
+    };
+  }
 
-    factory Task.fromJson(String source) => Task.fromMap(json.decode(source));
+  factory Task.fromMap(Map<String, dynamic> map) {
+    return Task(
+      id: map['id'] ?? '',
+      heading1: map['title'] ?? '', // Map 'title' to 'heading1'
+      heading2: map['type'] ?? '', // Map 'type' to 'heading2'
+      bodyText1: map['description'] ?? '', // Map 'description' to 'bodyText1'
+      bodyText2: map['description1'] ?? '', // Map 'description1' to 'bodyText2'
+      category: map['status'] ?? '', // Map 'status' to 'category'
+      membersName: List<String>.from(map['membersName'] ?? []), // Map 'membersName'
+      name: (map['membersName'] != null && map['membersName'].isNotEmpty)
+          ? map['membersName'][0]
+          : '', // Map first member to 'name'
+      date: map['date'] ?? '', // No date mapping in API, set default
+    );
+  }
 
-    Task copyWith({
-      String? id,
-      String? heading1,
-      String? heading2,
-      String? bodyText1,
-      String? bodyText2,
-      String? category,
-      String? name,
-      String? date,
-      List<String>? membersName
-    }) {
-      return Task(
-        id: id ?? this.id,
-        heading1:heading1 ?? this.heading1,
-        heading2:heading2 ?? this.heading2,
-        bodyText1:bodyText1?? this.bodyText1,
-        bodyText2:bodyText2??this.bodyText2,
-        category: category??this.category,
-        name:name??this.name,
-        date:date??this.date,
-        membersName: membersName??this.membersName,
-      );
-    } 
+  String toJson() => json.encode(toMap());
+
+  factory Task.fromJson(String source) => Task.fromMap(json.decode(source));
+
+  Task copyWith({
+    String? id,
+    String? heading1,
+    String? heading2,
+    String? bodyText1,
+    String? bodyText2,
+    String? name,
+    String? date,
+    String? category,
+    List<String>? membersName,
+  }) {
+    return Task(
+      id: id ?? this.id,
+      heading1: heading1 ?? this.heading1,
+      heading2: heading2 ?? this.heading2,
+      bodyText1: bodyText1 ?? this.bodyText1,
+      bodyText2: bodyText2 ?? this.bodyText2,
+      name: name ?? this.name,
+      date: date ?? this.date,
+      category: category ?? this.category,
+      membersName: membersName ?? this.membersName,
+    );
+  }
 }

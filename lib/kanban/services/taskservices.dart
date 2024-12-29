@@ -20,6 +20,7 @@ class TaskService {
     required String TaskStatus,
     required String teamId,
     required String TaskType,
+    required String date,
     required List<String> membersName, //selected members names
     required Result callback,
   }) async {
@@ -39,6 +40,7 @@ class TaskService {
         'type': TaskType,
         'teamId': teamId,
         'membersName': membersName.toString(),
+        'date':date
       }),
     );
  final data = json.decode(response.body);
