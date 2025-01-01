@@ -6,7 +6,7 @@ class Task {
   final String heading2;
   final String bodyText1;
   final String bodyText2;
-  final String name;
+  final String teamId;
   final String date;
   final String category;
   final List<String> membersName;
@@ -17,7 +17,7 @@ class Task {
     required this.heading2,
     required this.bodyText1,
     required this.bodyText2,
-    required this.name,
+    required this.teamId,
     required this.date,
     required this.category,
     required this.membersName,
@@ -30,7 +30,7 @@ class Task {
       'heading2': heading2,
       'bodyText1': bodyText1,
       'bodyText2': bodyText2,
-      'name': name,
+      'teamId': teamId,
       'date': date,
       'category': category,
       'membersName': membersName,
@@ -46,9 +46,7 @@ class Task {
       bodyText2: map['description1'] ?? '', // Map 'description1' to 'bodyText2'
       category: map['status'] ?? '', // Map 'status' to 'category'
       membersName: List<String>.from(map['membersName'] ?? []), // Map 'membersName'
-      name: (map['membersName'] != null && map['membersName'].isNotEmpty)
-          ? map['membersName'][0]
-          : '', // Map first member to 'name'
+      teamId: map['teamId'] ?? '', // No teamId mapping in API, set default
       date: map['date'] ?? '', // No date mapping in API, set default
     );
   }
@@ -63,7 +61,7 @@ class Task {
     String? heading2,
     String? bodyText1,
     String? bodyText2,
-    String? name,
+    String? teamId,
     String? date,
     String? category,
     List<String>? membersName,
@@ -74,7 +72,7 @@ class Task {
       heading2: heading2 ?? this.heading2,
       bodyText1: bodyText1 ?? this.bodyText1,
       bodyText2: bodyText2 ?? this.bodyText2,
-      name: name ?? this.name,
+      teamId: teamId ?? this.teamId,
       date: date ?? this.date,
       category: category ?? this.category,
       membersName: membersName ?? this.membersName,

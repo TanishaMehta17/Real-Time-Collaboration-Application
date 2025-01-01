@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
+import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:real_time_collaboration_application/team/screens/createTeam.dart';
 import 'package:real_time_collaboration_application/team/screens/joinTeam.dart';
 
@@ -142,6 +144,31 @@ class Joinorcreateteam extends StatelessWidget {
                     ],
                   ),
                 ),
+
+                ElevatedButton(
+                  onPressed: () {
+                    // Add your onPressed code here!
+                    // Code to expire the token
+                    // Assuming you have a method to handle token expiration
+                    // var userprovider = Provider.of<UserProvider>(context, listen: false);
+                    // userprovider.user.token = "123";
+                    Navigator.pushReplacementNamed(context, '/login-screen');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    'New Button',
+                    style: RTSTypography.mediumText.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
               ],
             ),
           ],

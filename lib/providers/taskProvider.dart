@@ -74,7 +74,7 @@ class TaskProvider with ChangeNotifier {
     bodyText2: '',
     heading1: '',
     heading2: '',
-    name: '',
+    teamId: '',
     date: '',
     category: '',
     membersName: List.empty(),

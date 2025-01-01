@@ -57,10 +57,10 @@ class _MyAppState extends State<MyApp> {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(),
-      // home: isUserLoggedIn
-      //     ? Joinorcreateteam()
-      //     : const LoginPage(), // Correct context access for providers
-      home: ChatScreen(),
+      home: isUserLoggedIn
+          ? Joinorcreateteam()
+          : const LoginPage(), // Correct context access for providers
+      // home: ChatScreen(),
       onGenerateRoute: (settings) => generateRoute(settings),
     );
   }
