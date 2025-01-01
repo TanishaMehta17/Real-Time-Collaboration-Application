@@ -46,8 +46,18 @@ class _AllTaskState extends State<AllTask> {
   @override
   void initState() {
     super.initState();
-    membersName =
-        Provider.of<TeamProvider>(context, listen: false).team.members;
+     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+
+    taskService.getmembers(context: context, teamname:teamProvider.team.name, callback: (success, tasks) {
+      if (success) {
+        print("Members fetched");
+        setState(() {
+          membersName = List<String>.from(tasks);
+        });
+      } else {
+        print("Members not fetched");
+      }
+    }, ); 
   }
 
   @override
@@ -73,6 +83,7 @@ class _AllTaskState extends State<AllTask> {
 
   void addTasks() {
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    print(selectedMembers);
     taskService.CreateTask(
         context: context,
         TaskType: heading1.text,
@@ -81,7 +92,7 @@ class _AllTaskState extends State<AllTask> {
         date:selectedDate.toString(),
         TaskDescription: bodyText2.text,
         TaskStatus: selectedCategory,
-        membersName: [],
+        membersName: selectedMembers.toList(),
         teamId: teamProvider.team.id,
         callback: (bool success) {
           if (success) {
@@ -134,14 +145,15 @@ class _AllTaskState extends State<AllTask> {
 ),
 
       drawer: const CustomDrawer(),
-      body: taskProvider.allTasks.isEmpty
+      body: taskProvider.task==null
           ? const Center(child: Text('No tasks available.'))
           : SingleChildScrollView(
               child: Column(
                 children: [
-                  ...filteredTasks
-                      .map((task) => CustomCard(task: task))
-                      .toList(),
+                  // ...filteredTasks
+                  //     .map((task) => CustomCard(task: task))
+                  //     .toList(),
+                  CustomCard(task: taskProvider.task),
                 ],
               ),
             ),

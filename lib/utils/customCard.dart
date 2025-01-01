@@ -82,7 +82,7 @@ class CustomCard extends StatelessWidget {
                       },
                       icon: const Icon(Icons.chat)),
                   const SizedBox(width: 8.0),
-                  Text(task.name,
+                  Text(task.teamId,
                       style:
                           RTSTypography.buttonText.copyWith(color: textColor)),
                 ],
