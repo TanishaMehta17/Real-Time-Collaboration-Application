@@ -34,7 +34,7 @@ class CustomCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Chip(
-                label: Text(task.heading1,
+                label: Text(task.title,
                     style: RTSTypography.buttonText
                         .copyWith(color: headingColor1)),
                 backgroundColor: boxColor1,
@@ -42,7 +42,7 @@ class CustomCard extends StatelessWidget {
               ),
               const SizedBox(width: 25),
               Chip(
-                label: Text(task.heading2,
+                label: Text(task.type,
                     style: RTSTypography.buttonText
                         .copyWith(color: headingColor2)),
                 backgroundColor: boxColor2,
@@ -54,7 +54,7 @@ class CustomCard extends StatelessWidget {
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Text(
-              task.bodyText1,
+              task.description,
               style: RTSTypography.buttonText
                   .copyWith(fontWeight: FontWeight.w500, color: textColor),
             ),
@@ -63,7 +63,7 @@ class CustomCard extends StatelessWidget {
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Text(
-              task.bodyText2,
+              task.description1,
               style: RTSTypography.buttonText.copyWith(
                   fontWeight: FontWeight.w500,
                   color: textColor.withOpacity(0.60)),
@@ -82,7 +82,7 @@ class CustomCard extends StatelessWidget {
                       },
                       icon: const Icon(Icons.chat)),
                   const SizedBox(width: 8.0),
-                  Text(task.teamId,
+                  Text(task.status,
                       style:
                           RTSTypography.buttonText.copyWith(color: textColor)),
                 ],

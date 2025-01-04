@@ -46,18 +46,39 @@ class _AllTaskState extends State<AllTask> {
   @override
   void initState() {
     super.initState();
-     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
 
-    taskService.getmembers(context: context, teamname:teamProvider.team.name, callback: (success, tasks) {
-      if (success) {
-        print("Members fetched");
-        setState(() {
-          membersName = List<String>.from(tasks);
-        });
-      } else {
-        print("Members not fetched");
-      }
-    }, ); 
+    taskService.getmembers(
+      context: context,
+      teamname: teamProvider.team.name,
+      callback: (success, tasks) {
+        if (success) {
+          print("Members fetched");
+          setState(() {
+            membersName = List<String>.from(tasks);
+          });
+        } else {
+          print("Members not fetched");
+        }
+      },
+    );
+
+    taskService.getTask(
+      context: context,
+      teamId: teamProvider.team.id,
+      callback: (success, tasks) {
+        if (success) {
+          print("Task fetched");
+          print(tasks);
+          setState(() {
+            taskProvider.setTasks(tasks);
+          });
+        } else {
+          print("Task not fetched");
+        }
+      },
+    );
   }
 
   @override
@@ -89,7 +110,7 @@ class _AllTaskState extends State<AllTask> {
         TaskType: heading1.text,
         TaskDecscription1: bodyText1.text,
         TaskName: heading2.text,
-        date:selectedDate.toString(),
+        date: selectedDate != null ? selectedDate!.toIso8601String() : '',
         TaskDescription: bodyText2.text,
         TaskStatus: selectedCategory,
         membersName: selectedMembers.toList(),
@@ -123,37 +144,36 @@ class _AllTaskState extends State<AllTask> {
 
     return Scaffold(
       appBar: AppBar(
-  title: const Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children:  [
-      Text(
-        'All Tasks',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'All Tasks',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(width: 10),
+            Icon(Icons.task, color: Colors.white),
+          ],
+        ),
+        backgroundColor: Colors.blue,
+        leading: Builder(
+          builder: (context) => IconButton(
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            icon: const Icon(Icons.menu, color: Colors.white),
+          ),
+        ),
       ),
-      SizedBox(width: 10),
-      Icon(Icons.task, color: Colors.white),
-    ],
-  ),
-  backgroundColor: Colors.blue,
-  leading: Builder(
-    builder: (context) => IconButton(
-      onPressed: () => Scaffold.of(context).openDrawer(),
-      icon: const Icon(Icons.menu, color: Colors.white),
-    ),
-  ),
-),
-
       drawer: const CustomDrawer(),
-      body: taskProvider.task==null
+      body: taskProvider.task == null
           ? const Center(child: Text('No tasks available.'))
           : SingleChildScrollView(
               child: Column(
                 children: [
-                  // ...filteredTasks
-                  //     .map((task) => CustomCard(task: task))
-                  //     .toList(),
-                  CustomCard(task: taskProvider.task),
+                  ...filteredTasks
+                      .map((task) => CustomCard(task: task))
+                      .toList(),
+                  //CustomCard(task: taskProvider.task),
                 ],
               ),
             ),
