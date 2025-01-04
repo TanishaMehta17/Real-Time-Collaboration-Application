@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
@@ -22,26 +23,28 @@ class _AllTaskState extends State<AllTask> {
   final TextEditingController bodyText1 = TextEditingController();
   final TextEditingController bodyText2 = TextEditingController();
   TaskService taskService = TaskService();
- DateTime? selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+ String selectedDate="Selcet Date";
+
 
   List<String> selectedMembers = [];
   final _formKey = GlobalKey<FormState>();
   String selectedCategory = 'To-Do';
 
  Future<void> _selectDate(BuildContext context) async {
-  final DateTime? picked = await showDatePicker(
-    context: context,
-    initialDate: DateTime.now(),
-    firstDate: DateTime(2000),
-    lastDate: DateTime(2101),
-  );
-  if (picked != null && picked != selectedDate) {
-    setState(() {
-      // Set time to 00:00:00.000 to remove time from the selected date
-      selectedDate = DateTime(picked.year, picked.month, picked.day);
-    });
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(), // Set initial date to today
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        // Convert picked DateTime to String and update selectedDate
+        selectedDate = DateFormat('yyyy-MM-dd').format(picked);
+        print("Selected Date: $selectedDate"); // Debugging line to check the date string
+      });
+    }
   }
-}
 
 
 
@@ -101,7 +104,7 @@ class _AllTaskState extends State<AllTask> {
     bodyText2.clear();
 
     setState(() {
-      selectedDate = null;
+      selectedDate = "";
       selectedMembers.clear();
     });
   }
@@ -115,7 +118,8 @@ class _AllTaskState extends State<AllTask> {
         TaskType: heading1.text,
         TaskDecscription1: bodyText1.text,
         TaskName: heading2.text,
-        date: selectedDate != null ? selectedDate!.toIso8601String() : '',
+      date: selectedDate != 'Select Date' ? selectedDate : '',
+
         TaskDescription: bodyText2.text,
         TaskStatus: selectedCategory,
         membersName: selectedMembers.toList(),
@@ -324,7 +328,9 @@ class _AllTaskState extends State<AllTask> {
     );
   }
 
-  Widget _buildDatePicker() {
+ 
+
+Widget _buildDatePicker() {
     return GestureDetector(
       onTap: () => _selectDate(context),
       child: Container(
@@ -337,9 +343,7 @@ class _AllTaskState extends State<AllTask> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              selectedDate == null
-                  ? 'Select Date'
-                  : selectedDate.toString().split(' ')[0],
+              selectedDate, // Show selected date as string
               style: const TextStyle(fontSize: 16),
             ),
             const Icon(Icons.calendar_today, color: Colors.blueAccent),
@@ -348,6 +352,11 @@ class _AllTaskState extends State<AllTask> {
       ),
     );
   }
+
+
+
+
+
 
   Widget _buildCategoryDropdown() {
     return DropdownButtonFormField<String>(

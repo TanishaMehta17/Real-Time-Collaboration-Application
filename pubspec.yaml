@@ -39,6 +39,7 @@ dependencies:
   shared_preferences:
   provider: ^6.1.2
   audioplayers:
+  intl:
   swipe_to: 
   http:
   emoji_picker_flutter:
