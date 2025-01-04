@@ -22,24 +22,28 @@ class _AllTaskState extends State<AllTask> {
   final TextEditingController bodyText1 = TextEditingController();
   final TextEditingController bodyText2 = TextEditingController();
   TaskService taskService = TaskService();
-  DateTime? selectedDate = DateTime.now();
+ DateTime? selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
   List<String> selectedMembers = [];
   final _formKey = GlobalKey<FormState>();
   String selectedCategory = 'To-Do';
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
+ Future<void> _selectDate(BuildContext context) async {
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2101),
+  );
+  if (picked != null && picked != selectedDate) {
+    setState(() {
+      // Set time to 00:00:00.000 to remove time from the selected date
+      selectedDate = DateTime(picked.year, picked.month, picked.day);
+    });
   }
+}
+
+
 
   List<String> membersName = [];
 
@@ -104,6 +108,7 @@ class _AllTaskState extends State<AllTask> {
 
   void addTasks() {
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
     print(selectedMembers);
     taskService.CreateTask(
         context: context,
@@ -118,6 +123,21 @@ class _AllTaskState extends State<AllTask> {
         callback: (bool success) {
           if (success) {
             print("Task Created");
+              taskService.getTask(
+      context: context,
+      teamId: teamProvider.team.id,
+      callback: (success, tasks) {
+        if (success) {
+          print("Task fetched");
+          print(tasks);
+          setState(() {
+            taskProvider.setTasks(tasks);
+          });
+        } else {
+          print("Task not fetched");
+        }
+      },
+    );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -132,15 +152,17 @@ class _AllTaskState extends State<AllTask> {
             print("Task not Created");
           }
         });
+        setState(() {
+          
+        });
   }
-
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-    // Always display tasks from allTasks list for the "All Tasks" screen
-    List<Task> filteredTasks = taskProvider.allTasks; // Get all tasks here
+  
+    List<Task>filteredTasks = taskProvider.allTasks; // Get all tasks here
 
     return Scaffold(
       appBar: AppBar(

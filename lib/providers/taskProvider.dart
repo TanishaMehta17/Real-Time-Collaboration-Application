@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:real_time_collaboration_application/model/task.dart';
 
@@ -30,24 +29,26 @@ class TaskProvider with ChangeNotifier {
 
   // Task Lists
   List<Task> _allTasks = [];
-   List<Task> get allTasks => _allTasks;
+  List<Task> get allTasks => _allTasks;
 
   // Filter tasks by category
   List<Task> getTasksByCategory(String category) {
-    return _allTasks.where((task) => task.status.toLowerCase() == category.toLowerCase()).toList();
+    return _allTasks
+        .where((task) => task.status.toLowerCase() == category.toLowerCase())
+        .toList();
   }
 
-  //Set tasks from a list of JSON
   void setTasks(List<dynamic> tasks) {
-    _allTasks = tasks.map((task) => Task.fromJson(task)).toList();
+    _allTasks = tasks
+        .map((task) => Task.fromMap(task as Map<String, dynamic>))
+        .toList();
     notifyListeners();
   }
-
 
   // Add a new task
   void addTask(Task task) {
+    // print(task);
     _allTasks.add(task);
     notifyListeners();
   }
-
 }

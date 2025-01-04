@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 
 typedef Result = void Function(bool success);
 typedef TaskResult = void Function(bool success, List<dynamic> tasks);
-typedef TaskResults = void Function(bool success, List<Task> tasks);
+typedef TaskResults = void Function(bool success, List<dynamic> tasks);
 
 class TaskService {
   Future<void> CreateTask({
@@ -55,6 +55,7 @@ class TaskService {
     if (data['isSuccess']) {
       taskProvider
           .setTask(response.body); // Update the task list in TaskProvider
+        
       callback(true);
     } else {
       callback(false);
@@ -111,20 +112,8 @@ class TaskService {
     if (data['isSuccess']) {
       callback(true, data['tasks']);
     } else {
-      print("problemmmmmmmmmmmmmmm");
       callback(false, []);
     }
   }
 }
 
-//     Map<String, dynamic> data = json.decode(response.body);
-//     debugPrint(data.toString());
-//     final taskprovider = Provider.of<TaskProvider>(context, listen: false);
-//     taskprovider.setTask(response.body);
-//     if (data['isSuccess']) {
-//       callback(true);
-//     } else {
-//       callback(false);
-//     }
-//   }
-// }
