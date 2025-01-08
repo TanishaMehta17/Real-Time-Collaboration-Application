@@ -1,186 +1,21 @@
-// import 'package:flutter/material.dart';
-// import 'package:real_time_collaboration_application/chat/widget/bottom_chat_field.dart';
-// import 'package:real_time_collaboration_application/chat/widget/display_text_image_gif.dart';
-// import 'package:real_time_collaboration_application/chat/widget/enum.dart';
-// import 'package:real_time_collaboration_application/common/colors.dart';
-
-// class ChatScreen extends StatefulWidget {
-//   static const String routeName = '/chat-screen';
-//   const ChatScreen({super.key});
-
-//   @override
-//   State<ChatScreen> createState() => _ChatScreenState();
-// }
-
-// class _ChatScreenState extends State<ChatScreen> {
-//   final ScrollController messageController = ScrollController();
-
-//   void onMessageSwipe(String message, bool isMe, String type) {
-//     // Add your swipe handling logic here
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Container(
-//         width: double.infinity,
-//         height: double.infinity,
-//         decoration: const BoxDecoration(
-//           gradient: LinearGradient(
-//             colors: [
-//               gradientColor1,
-//               gradientColor2,
-//               gradientColor1,
-//             ],
-//             stops: [0.2, 0.5, 1.0],
-//             begin: Alignment.topRight,
-//             end: Alignment.bottomLeft,
-//           ),
-//         ),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.end,
-//           children: [
-//             Expanded(
-//               child: StreamBuilder(
-//                 stream: null, // Replace with your stream
-//                 builder: (context, snapshot) {
-//                   if (snapshot.connectionState == ConnectionState.waiting) {
-//                     return const Center(child: CircularProgressIndicator());
-//                   }
-//                   if (snapshot.hasData && snapshot.data != null) {
-//                     return ListView.builder(
-//                       controller: messageController,
-//                       itemCount: 10, // Replace with snapshot.data.length
-//                       itemBuilder: (context, index) {
-//                         // Replace with actual message data
-//                          String message = "Message $index"; // Example message
-//                         const bool isReplying = true;
-//                         const String username = "Username";
-//                         const String repliedText = "Replied message";
-//                         const String date = "12:00 PM";
-//                         const bool isSeen = true;
-//                         const MessageEnum type = MessageEnum.text;
-//                         const MessageEnum repliedMessageType = MessageEnum.text;
-
-//                         return Align(
-//                           alignment: Alignment.centerRight,
-//                           child: ConstrainedBox(
-//                             constraints: BoxConstraints(
-//                               maxWidth: MediaQuery.of(context).size.width - 45,
-//                             ),
-//                             child: Card(
-//                               elevation: 1,
-//                               shape: RoundedRectangleBorder(
-//                                 borderRadius: BorderRadius.circular(8),
-//                               ),
-//                               color: messageColor,
-//                               margin: const EdgeInsets.symmetric(
-//                                 horizontal: 15,
-//                                 vertical: 5,
-//                               ),
-//                               child: Stack(
-//                                 children: [
-//                                   Padding(
-//                                     padding: type == MessageEnum.text
-//                                         ? const EdgeInsets.only(
-//                                             left: 10,
-//                                             right: 30,
-//                                             top: 5,
-//                                             bottom: 20,
-//                                           )
-//                                         : const EdgeInsets.only(
-//                                             left: 5,
-//                                             top: 5,
-//                                             right: 5,
-//                                             bottom: 25,
-//                                           ),
-//                                     child: Column(
-//                                       crossAxisAlignment:
-//                                           CrossAxisAlignment.start,
-//                                       children: [
-//                                         if (isReplying) ...[
-//                                         const  Text(
-//                                             username,
-//                                             style:  TextStyle(
-//                                               fontWeight: FontWeight.bold,
-//                                             ),
-//                                           ),
-//                                           const SizedBox(height: 3),
-//                                           Container(
-//                                             padding: const EdgeInsets.all(10),
-//                                             decoration: BoxDecoration(
-//                                               color: backgroundColor
-//                                                   .withOpacity(0.5),
-//                                               borderRadius:
-//                                                   const BorderRadius.all(
-//                                                 Radius.circular(5),
-//                                               ),
-//                                             ),
-//                                             child: const DisplayTextImageGIF(
-//                                               message: repliedText,
-//                                               type: repliedMessageType,
-//                                             ),
-//                                           ),
-//                                           const SizedBox(height: 8),
-//                                         ],
-//                                         DisplayTextImageGIF(
-//                                           message: message,
-//                                           type: type,
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ),
-//                                 const  Positioned(
-//                                     bottom: 4,
-//                                     right: 10,
-//                                     child: Row(
-//                                       children: [
-//                                         Text(
-//                                           date,
-//                                           style:  TextStyle(
-//                                             fontSize: 13,
-//                                             color: Colors.white60,
-//                                           ),
-//                                         ),
-//                                          SizedBox(width: 5),
-//                                         Icon(
-//                                           isSeen
-//                                               ? Icons.done_all
-//                                               : Icons.done,
-//                                           size: 20,
-//                                           color: isSeen
-//                                               ? Colors.blue
-//                                               : Colors.white60,
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-//                             ),
-//                           ),
-//                         );
-//                       },
-//                     );
-//                   }
-//                   return const Center(child: Text('No messages found.'));
-//                 },
-//               ),
-//             ),
-//             const BottomChatField(),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/chat/widget/bottom_chat_field.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
+import 'package:real_time_collaboration_application/global_variable.dart';
+import 'package:real_time_collaboration_application/providers/taskProvider.dart';
+import 'package:real_time_collaboration_application/providers/teamProvider.dart';
+import 'package:real_time_collaboration_application/providers/userProvider.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatScreen extends StatefulWidget {
+  const ChatScreen({
+    Key? key,
+  }) : super(key: key);
+
   static const String routeName = '/chat-screen';
+
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -188,22 +23,84 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
-  List<String> messages = [];
+  List<Map<String, dynamic>> messages = []; // Store messages with metadata
   bool isShowEmojiContainer = false;
   bool isShowSendButton = false;
+  late IO.Socket socket;
+  late TaskProvider taskProvider;
+  late UserProvider userProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    taskProvider= Provider.of<TaskProvider>(context, listen: false);
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+    setupSocketConnection();
+  }
+
+  @override
+  void dispose() {
+    messageController.dispose();
+    scrollController.dispose();
+    socket.dispose();
+    super.dispose();
+  }
+
+  void setupSocketConnection() {
+    socket = IO.io(
+      uri, // Replace with your backend URL
+      IO.OptionBuilder()
+          .setTransports(['websocket'])
+          .disableAutoConnect()
+          .build(),
+    );
+
+    socket.connect();
+
+    socket.onConnect((_) {
+      print("Connected to server");
+      socket.emit("joinTask", taskProvider.task.id);
+
+      // Fetch messages for the task
+      socket.emit("getmessages", taskProvider.task.id);
+
+      // Listen for incoming messages
+      socket.on("messages", (data) {
+        setState(() {
+          messages = List<Map<String, dynamic>>.from(data);
+        });
+      });
+
+      socket.on("messageCreated", (data) {
+        setState(() {
+          messages.add(data);
+        });
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
+    });
+
+    socket.onDisconnect((_) => print("Disconnected from server"));
+  }
 
   void sendTextMessage() {
     if (messageController.text.trim().isNotEmpty) {
+      final message = messageController.text.trim();
+      final data = {
+        "taskId": taskProvider.task.id,
+        "userId": userProvider.user.id,
+        "content": message,
+      };
+
+      socket.emit("createmessage", data);
+
       setState(() {
-        messages.add(messageController.text.trim());
         messageController.clear();
         isShowSendButton = false;
       });
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
     }
   }
 
@@ -241,9 +138,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 controller: scrollController,
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
+                  final message = messages[index];
                   return Align(
-                    alignment:
-                        Alignment.centerRight, // Align messages to the right
+                    alignment: Alignment.centerRight, // Align messages to right
                     child: Card(
                       elevation: 1,
                       shape: RoundedRectangleBorder(
@@ -257,7 +154,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
-                          messages[index], // Display the message content
+                          message['message'], // Display the message content
                           style: const TextStyle(
                             color: Colors.white, // Set text color to white
                             fontSize: 16,

@@ -42,6 +42,7 @@ dependencies:
   intl:
   swipe_to: 
   http:
+  socket_io_client: 
   emoji_picker_flutter:
 dev_dependencies:
   flutter_test:
