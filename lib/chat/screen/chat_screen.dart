@@ -71,11 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
       print("Connected to server");
 
       print(widget.taskId);
-      // if (taskId == null) {
-      //   SnackBar snackBar = const SnackBar(
-      //     content: Text("Task ID is null"),
-      //   );
-      // }
+      
 
       // Join the task room
       socket.emit("joinTask", widget.taskId);
