@@ -5,21 +5,17 @@ import 'package:real_time_collaboration_application/chat/widget/bottom_chat_fiel
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/global_variable.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
-import 'package:real_time_collaboration_application/providers/teamProvider.dart';
 import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({
-    Key? key,
-  }) : super(key: key);
-
+  final String taskId;
+   const ChatScreen({Key? key, required this.taskId}) : super(key: key);
   static const String routeName = '/chat-screen';
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
-
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController messageController = TextEditingController();
@@ -36,6 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     taskProvider = Provider.of<TaskProvider>(context, listen: false);
     userProvider = Provider.of<UserProvider>(context, listen: false);
+   
     setupSocketConnection();
   }
 
@@ -46,49 +43,6 @@ class _ChatScreenState extends State<ChatScreen> {
     socket.dispose();
     super.dispose();
   }
-
-  void setupSocketConnection() {
-  socket = IO.io(
-    uri, // Replace with your backend URL
-    IO.OptionBuilder()
-        .setTransports(['websocket'])
-        .disableAutoConnect()
-        .build(),
-  );
-
-  socket.connect();
-
-  socket.onConnect((_) {
-    print("Connected to server");
-    final taskId = taskProvider.task.id;
-    if (taskId == null) return;
-
-    // Join the task room
-    socket.emit("joinTask", taskId);
-
-    // Fetch existing messages
-    socket.emit("getmessages", taskId);
-
-    // Listen for existing messages
-    socket.on("messages", (data) {
-      setState(() {
-        messages = List<Map<String, dynamic>>.from(data);
-      });
-      scrollToBottom();
-    });
-
-    // Listen for new messages
-    socket.on("messageCreated", (data) {
-      setState(() {
-        messages.add(data);
-      });
-      scrollToBottom();
-    });
-  });
-
-  socket.onDisconnect((_) => print("Disconnected from server"));
-}
-
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -102,11 +56,61 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  void setupSocketConnection() {
+    socket = IO.io(
+      uri, // Replace with your backend URL
+      IO.OptionBuilder()
+          .setTransports(['websocket'])
+          .disableAutoConnect()
+          .build(),
+    );
+
+    socket.connect();
+
+    socket.onConnect((_) {
+      print("Connected to server");
+
+      print(widget.taskId);
+      // if (taskId == null) {
+      //   SnackBar snackBar = const SnackBar(
+      //     content: Text("Task ID is null"),
+      //   );
+      // }
+
+      // Join the task room
+      socket.emit("joinTask", widget.taskId);
+
+      // Fetch existing messages
+      socket.emit("getmessages", widget.taskId);
+
+      // Listen for existing messages
+      socket.on("messages", (data) {
+        setState(() {
+          messages = List<Map<String, dynamic>>.from(data);
+          print("helllllllllllllllllllllllllllllllllllllllll");
+          print(messages);
+        });
+        scrollToBottom();
+      });
+
+      // Listen for new messages
+      socket.on("messageCreated", (data) {
+        print(data);
+        setState(() {
+          messages.add(data);
+        });
+        scrollToBottom();
+      });
+    });
+
+    socket.onDisconnect((_) => print("Disconnected from server"));
+  }
+
   void sendTextMessage() {
     if (messageController.text.trim().isNotEmpty) {
       final message = messageController.text.trim();
       final data = {
-        "taskId": taskProvider.task.id,
+        "taskId": widget.taskId,
         "userId": userProvider.user.id,
         "content": message,
       };

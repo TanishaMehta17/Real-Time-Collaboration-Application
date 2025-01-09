@@ -23,14 +23,13 @@ class _AllTaskState extends State<AllTask> {
   final TextEditingController bodyText1 = TextEditingController();
   final TextEditingController bodyText2 = TextEditingController();
   TaskService taskService = TaskService();
- String selectedDate="Selcet Date";
-
+  String selectedDate = "Selcet Date";
 
   List<String> selectedMembers = [];
   final _formKey = GlobalKey<FormState>();
   String selectedCategory = 'To-Do';
 
- Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(), // Set initial date to today
@@ -41,15 +40,13 @@ class _AllTaskState extends State<AllTask> {
       setState(() {
         // Convert picked DateTime to String and update selectedDate
         selectedDate = DateFormat('yyyy-MM-dd').format(picked);
-        print("Selected Date: $selectedDate"); // Debugging line to check the date string
+        print(
+            "Selected Date: $selectedDate"); // Debugging line to check the date string
       });
     }
   }
 
-
-  
   List<String> membersName = [];
-  
 
   @override
   void initState() {
@@ -71,14 +68,15 @@ class _AllTaskState extends State<AllTask> {
         }
       },
     );
-
+    print("alll taskkkk");
+    print(taskProvider.allTasks);
     taskService.getTask(
       context: context,
       teamId: teamProvider.team.id,
       callback: (success, tasks) {
         if (success) {
           print("Task fetched");
-          print(tasks);
+          // print(tasks);
           setState(() {
             taskProvider.setTasks(tasks);
           });
@@ -119,8 +117,7 @@ class _AllTaskState extends State<AllTask> {
         TaskType: heading1.text,
         TaskDecscription1: bodyText1.text,
         TaskName: heading2.text,
-      date: selectedDate != 'Select Date' ? selectedDate : '',
-
+        date: selectedDate != 'Select Date' ? selectedDate : '',
         TaskDescription: bodyText2.text,
         TaskStatus: selectedCategory,
         membersName: selectedMembers.toList(),
@@ -128,21 +125,21 @@ class _AllTaskState extends State<AllTask> {
         callback: (bool success) {
           if (success) {
             print("Task Created");
-              taskService.getTask(
-      context: context,
-      teamId: teamProvider.team.id,
-      callback: (success, tasks) {
-        if (success) {
-          print("Task fetched");
-          print(tasks);
-          setState(() {
-            taskProvider.setTasks(tasks);
-          });
-        } else {
-          print("Task not fetched");
-        }
-      },
-    );
+            taskService.getTask(
+              context: context,
+              teamId: teamProvider.team.id,
+              callback: (success, tasks) {
+                if (success) {
+                  print("Task fetched");
+                  print(tasks);
+                  setState(() {
+                    taskProvider.setTasks(tasks);
+                  });
+                } else {
+                  print("Task not fetched");
+                }
+              },
+            );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -157,17 +154,15 @@ class _AllTaskState extends State<AllTask> {
             print("Task not Created");
           }
         });
-        setState(() {
-          
-        });
+    setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  
-    List<Task>filteredTasks = taskProvider.allTasks; // Get all tasks here
+    List<Task> filteredTasks = taskProvider.allTasks; // Get all tasks here
 
     return Scaffold(
       appBar: AppBar(
@@ -329,9 +324,7 @@ class _AllTaskState extends State<AllTask> {
     );
   }
 
- 
-
-Widget _buildDatePicker() {
+  Widget _buildDatePicker() {
     return GestureDetector(
       onTap: () => _selectDate(context),
       child: Container(
@@ -353,11 +346,6 @@ Widget _buildDatePicker() {
       ),
     );
   }
-
-
-
-
-
 
   Widget _buildCategoryDropdown() {
     return DropdownButtonFormField<String>(

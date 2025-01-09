@@ -78,7 +78,11 @@ class CustomCard extends StatelessWidget {
                 children: [
                   IconButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, ChatScreen.routeName);
+                        Navigator.pushNamed(
+                          context,
+                          ChatScreen.routeName,
+                          arguments: task.id, // Pass the task.id here
+                        );
                       },
                       icon: const Icon(Icons.chat)),
                   const SizedBox(width: 8.0),
@@ -102,4 +106,3 @@ class CustomCard extends StatelessWidget {
     );
   }
 }
-
