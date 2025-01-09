@@ -57,11 +57,13 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         settings: routeSettings,
         builder: (_) =>  AllTask(),
       );
-       case ChatScreen.routeName:
-      return MaterialPageRoute(
-        settings: routeSettings,
-        builder: (_) =>  ChatScreen(),
-      );
+     case ChatScreen.routeName:
+  return MaterialPageRoute(
+    settings: routeSettings,
+    builder: (_) => const ChatScreen(
+    ),
+  );
+
     default:
       return MaterialPageRoute(
         settings: routeSettings,

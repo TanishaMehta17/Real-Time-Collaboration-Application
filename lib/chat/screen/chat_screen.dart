@@ -20,10 +20,11 @@ class ChatScreen extends StatefulWidget {
   _ChatScreenState createState() => _ChatScreenState();
 }
 
+
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
-  List<Map<String, dynamic>> messages = []; // Store messages with metadata
+  List<Map<String, dynamic>> messages = [];
   bool isShowEmojiContainer = false;
   bool isShowSendButton = false;
   late IO.Socket socket;
@@ -33,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    taskProvider= Provider.of<TaskProvider>(context, listen: false);
+    taskProvider = Provider.of<TaskProvider>(context, listen: false);
     userProvider = Provider.of<UserProvider>(context, listen: false);
     setupSocketConnection();
   }
@@ -47,43 +48,58 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void setupSocketConnection() {
-    socket = IO.io(
-      uri, // Replace with your backend URL
-      IO.OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect()
-          .build(),
-    );
+  socket = IO.io(
+    uri, // Replace with your backend URL
+    IO.OptionBuilder()
+        .setTransports(['websocket'])
+        .disableAutoConnect()
+        .build(),
+  );
 
-    socket.connect();
+  socket.connect();
 
-    socket.onConnect((_) {
-      print("Connected to server");
-      socket.emit("joinTask", taskProvider.task.id);
+  socket.onConnect((_) {
+    print("Connected to server");
+    final taskId = taskProvider.task.id;
+    if (taskId == null) return;
 
-      // Fetch messages for the task
-      socket.emit("getmessages", taskProvider.task.id);
+    // Join the task room
+    socket.emit("joinTask", taskId);
 
-      // Listen for incoming messages
-      socket.on("messages", (data) {
-        setState(() {
-          messages = List<Map<String, dynamic>>.from(data);
-        });
+    // Fetch existing messages
+    socket.emit("getmessages", taskId);
+
+    // Listen for existing messages
+    socket.on("messages", (data) {
+      setState(() {
+        messages = List<Map<String, dynamic>>.from(data);
       });
+      scrollToBottom();
+    });
 
-      socket.on("messageCreated", (data) {
-        setState(() {
-          messages.add(data);
-        });
+    // Listen for new messages
+    socket.on("messageCreated", (data) {
+      setState(() {
+        messages.add(data);
+      });
+      scrollToBottom();
+    });
+  });
+
+  socket.onDisconnect((_) => print("Disconnected from server"));
+}
+
+
+  void scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
         scrollController.animateTo(
           scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
-      });
+      }
     });
-
-    socket.onDisconnect((_) => print("Disconnected from server"));
   }
 
   void sendTextMessage() {
@@ -121,11 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              gradientColor1,
-              gradientColor2,
-              gradientColor1,
-            ],
+            colors: [gradientColor1, gradientColor2, gradientColor1],
             stops: [0.2, 0.5, 1.0],
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
@@ -140,7 +152,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 itemBuilder: (context, index) {
                   final message = messages[index];
                   return Align(
-                    alignment: Alignment.centerRight, // Align messages to right
+                    alignment: Alignment.centerRight,
                     child: Card(
                       elevation: 1,
                       shape: RoundedRectangleBorder(
@@ -154,9 +166,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
-                          message['message'], // Display the message content
+                          message['message'],
                           style: const TextStyle(
-                            color: Colors.white, // Set text color to white
+                            color: Colors.white,
                             fontSize: 16,
                           ),
                         ),
