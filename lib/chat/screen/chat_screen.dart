@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/chat/widget/bottom_chat_field.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
@@ -10,7 +11,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatScreen extends StatefulWidget {
   final String taskId;
-   const ChatScreen({Key? key, required this.taskId}) : super(key: key);
+  const ChatScreen({Key? key, required this.taskId}) : super(key: key);
   static const String routeName = '/chat-screen';
 
   @override
@@ -32,7 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     taskProvider = Provider.of<TaskProvider>(context, listen: false);
     userProvider = Provider.of<UserProvider>(context, listen: false);
-   
+
     setupSocketConnection();
   }
 
@@ -71,7 +72,6 @@ class _ChatScreenState extends State<ChatScreen> {
       print("Connected to server");
 
       print(widget.taskId);
-      
 
       // Join the task room
       socket.emit("joinTask", widget.taskId);
@@ -163,15 +163,49 @@ class _ChatScreenState extends State<ChatScreen> {
                         horizontal: 15,
                         vertical: 5,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          message['message'],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              message['userId'] == userProvider.user.id
+                                  ? 'You'
+                                  : message['userId'],
+                              style: TextStyle(
+                                color: Colors.green[200],
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  message['message'],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            message['timestamp'] != null
+                                ? DateFormat.Hm().format(
+                                    DateTime.tryParse(message['timestamp']) ??
+                                        DateTime.now())
+                                : 'N/A',
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   );
