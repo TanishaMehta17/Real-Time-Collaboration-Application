@@ -109,6 +109,8 @@ class _ChatScreenState extends State<ChatScreen> {
         "taskId": widget.taskId,
         "userId": userProvider.user.id,
         "content": message,
+        "username": userProvider.user.username,
+        "timestamp": DateTime.now().toUtc().toIso8601String(),
       };
 
       socket.emit("createmessage", data);
@@ -170,7 +172,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             child: Text(
                               message['userId'] == userProvider.user.id
                                   ? 'You'
-                                  : message['userId'],
+                                  : message['username'],
                               style: TextStyle(
                                 color: Colors.green[200],
                                 fontSize: 10,
@@ -194,10 +196,10 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           Text(
                             message['timestamp'] != null
-                                ? DateFormat.Hm().format(
-                                    DateTime.tryParse(message['timestamp']) ??
-                                        DateTime.now())
-                                : 'N/A',
+                  ? DateFormat('hh:mm a').format(
+                      DateTime.parse(message['timestamp']).toLocal(), // Convert to local time
+                    )
+                  : 'N/A',
                             textAlign: TextAlign.right,
                             style: const TextStyle(
                               color: Colors.grey,
