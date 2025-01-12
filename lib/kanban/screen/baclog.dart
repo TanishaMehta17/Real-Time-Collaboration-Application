@@ -6,6 +6,7 @@ import 'package:real_time_collaboration_application/common/typography.dart';
 import 'package:real_time_collaboration_application/model/task.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/utils/customCard.dart';
+import 'package:real_time_collaboration_application/utils/custom_card_category.dart';
 import 'package:real_time_collaboration_application/utils/drawer.dart';
 
 
@@ -16,7 +17,7 @@ class Backlog extends StatelessWidget {
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
     var backlogTasks = taskProvider.getTasksByCategory('backlog');
-
+    
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +45,7 @@ class Backlog extends StatelessWidget {
        body: backlogTasks.isNotEmpty
           ? ListView.builder(
               itemCount: backlogTasks.length,
-              itemBuilder: (context, index) => CustomCard(task: backlogTasks[index]),
+              itemBuilder: (context, index) => CustomCardCategory(task: backlogTasks[index]),
             )
           : const Center(
               child: Text(

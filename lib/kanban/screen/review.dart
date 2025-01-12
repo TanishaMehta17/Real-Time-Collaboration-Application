@@ -4,6 +4,7 @@ import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/utils/customCard.dart';
+import 'package:real_time_collaboration_application/utils/custom_card_category.dart';
 import 'package:real_time_collaboration_application/utils/drawer.dart';
 
 
@@ -41,7 +42,7 @@ class Review extends StatelessWidget {
       body: reviewTasks.isNotEmpty
           ? ListView.builder(
               itemCount: reviewTasks.length,
-              itemBuilder: (context, index) => CustomCard(task: reviewTasks[index]),
+              itemBuilder: (context, index) => CustomCardCategory(task: reviewTasks[index]),
             )
           : const Center(
               child: Text(

@@ -37,7 +37,7 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         settings: routeSettings,
         builder: (_) => const Joinorcreateteam(),
       );
-    case Backlog.routeName:
+     case Backlog.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
         builder: (_) =>  Backlog(),
@@ -53,17 +53,22 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         builder: (_) =>  Review(),
       );
     case AllTask.routeName:
+      final args = routeSettings.arguments as String;
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_) =>  AllTask(),
+        builder: (_) => AllTask(
+          teamId: args,
+        ),
       );
-    case ChatScreen.routeName:
-  final args = routeSettings.arguments as String;
-  return MaterialPageRoute(
-    settings: routeSettings,
-    builder: (_) => ChatScreen(taskId: args),
-  );
 
+    case ChatScreen.routeName:
+      final args = routeSettings.arguments as Map<String, dynamic>;
+      String taskId = args['taskId']; // Extract taskId
+
+      return MaterialPageRoute(
+        settings: routeSettings,
+        builder: (_) => ChatScreen(taskId: taskId,),
+      );
 
     default:
       return MaterialPageRoute(

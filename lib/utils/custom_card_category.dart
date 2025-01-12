@@ -3,13 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/chat/screen/chat_screen.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
+import 'package:real_time_collaboration_application/model/task.dart';
 import 'package:real_time_collaboration_application/providers/userProvider.dart';
 
-class CustomCard extends StatelessWidget {
-  final Map<String, dynamic> task; // Define the task parameter
+class CustomCardCategory extends StatelessWidget {
+  final Task task; // Define the task parameter
 
   // Constructor to accept task data
-  CustomCard({required this.task});
+  CustomCardCategory({required this.task});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,7 @@ class CustomCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Chip(
-                label: Text(task['title'],
+                label: Text(task.title,
                     style: RTSTypography.buttonText
                         .copyWith(color: headingColor1)),
                 backgroundColor: boxColor1,
@@ -44,7 +45,7 @@ class CustomCard extends StatelessWidget {
               ),
               const SizedBox(width: 25),
               Chip(
-                label: Text(task['type'],
+                label: Text(task.type,
                     style: RTSTypography.buttonText
                         .copyWith(color: headingColor2)),
                 backgroundColor: boxColor2,
@@ -56,7 +57,7 @@ class CustomCard extends StatelessWidget {
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Text(
-              task['description'],
+              task.description,
               style: RTSTypography.buttonText
                   .copyWith(fontWeight: FontWeight.w500, color: textColor),
             ),
@@ -65,7 +66,7 @@ class CustomCard extends StatelessWidget {
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Text(
-              task['description1'],
+              task.description1,
               style: RTSTypography.buttonText.copyWith(
                   fontWeight: FontWeight.w500,
                   color: textColor.withOpacity(0.60)),
@@ -80,10 +81,10 @@ class CustomCard extends StatelessWidget {
                 children: [
                   IconButton(
                       onPressed: () {
-                        task['membersName'].contains(userProvider.user.username)
+                        task.membersName.contains(userProvider.user.username)
                             ? Navigator.pushNamed(context, ChatScreen.routeName,
                                 arguments: {
-                                    "taskId": task['id'],
+                                    "taskId": task.id,
                                   })
                             : Future.delayed(Duration.zero, () {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -97,7 +98,7 @@ class CustomCard extends StatelessWidget {
                       },
                       icon: const Icon(Icons.chat)),
                   const SizedBox(width: 8.0),
-                  Text(task['status'],
+                  Text(task.status,
                       style:
                           RTSTypography.buttonText.copyWith(color: textColor)),
                 ],
@@ -107,7 +108,7 @@ class CustomCard extends StatelessWidget {
                   const Icon(Icons.calendar_today,
                       size: 16.0, color: boxShadow),
                   const SizedBox(width: 4.0),
-                  Text(task['date'], style: RTSTypography.smallText2),
+                  Text(task.date, style: RTSTypography.smallText2),
                 ],
               ),
             ],
