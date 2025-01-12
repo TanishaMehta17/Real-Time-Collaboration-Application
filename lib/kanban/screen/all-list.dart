@@ -60,7 +60,6 @@ class _AllTaskState extends State<AllTask> {
     super.initState();
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-
     taskService.getmembers(
       context: context,
       teamname: teamProvider.team.name,
@@ -90,7 +89,23 @@ class _AllTaskState extends State<AllTask> {
     socket.dispose();
     super.dispose();
   }
-
+ @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  // Emit to fetch tasks if not already loaded
+  if (tasks.isEmpty) {
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    socket.emit("getTask", teamProvider.team.id);
+     socket.on("tasks", (data) {
+        setState(() {
+          tasks = List<Map<String, dynamic>>.from(data);
+          taskProvider.setTasks(tasks);
+        });
+        scrollToBottom();
+      });
+  }
+}
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (scrollController.hasClients) {
@@ -135,7 +150,7 @@ class _AllTaskState extends State<AllTask> {
         });
         scrollToBottom();
       });
-
+      
       // Listen for new messages
       socket.on("taskCreated", (data) {
         setState(() {
@@ -144,7 +159,8 @@ class _AllTaskState extends State<AllTask> {
         scrollToBottom();
       });
     });
-
+    
+      
     socket.onDisconnect((_) => print("Disconnected from server"));
   }
 
@@ -224,7 +240,7 @@ class _AllTaskState extends State<AllTask> {
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 final task = tasks[index];
-                return CustomCard(task: task);
+                return CustomCard(task: task, socket: socket, tasks: tasks,);
               },
             ),
       floatingActionButton: userProvider.user.id == teamProvider.team.managerId

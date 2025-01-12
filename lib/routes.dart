@@ -4,6 +4,7 @@ import 'package:real_time_collaboration_application/auth/screens/signUp.dart';
 import 'package:real_time_collaboration_application/chat/screen/chat_screen.dart';
 import 'package:real_time_collaboration_application/kanban/screen/all-list.dart';
 import 'package:real_time_collaboration_application/kanban/screen/baclog.dart';
+import 'package:real_time_collaboration_application/kanban/screen/complete-task-screen.dart';
 import 'package:real_time_collaboration_application/kanban/screen/review.dart';
 import 'package:real_time_collaboration_application/kanban/screen/to-do.dart';
 import 'package:real_time_collaboration_application/team/screens/createTeam.dart';
@@ -51,6 +52,11 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
       return MaterialPageRoute(
         settings: routeSettings,
         builder: (_) =>  Review(),
+      );
+      case CompleteTask.routeName:
+      return MaterialPageRoute(
+        settings: routeSettings,
+        builder: (_) =>  CompleteTask(),
       );
     case AllTask.routeName:
       final args = routeSettings.arguments as String;

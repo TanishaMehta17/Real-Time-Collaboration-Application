@@ -9,18 +9,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 typedef Result = void Function(bool success);
-class TeamService {
 
+class TeamService {
   Future<void> JoinTeam({
-   required BuildContext context,
-   required String TeamName,
+    required BuildContext context,
+    required String TeamName,
     required String password,
     required Result callback,
-  }) async{
+  }) async {
     // final userProvider = Provider.of<UserProvider>(context, listen: false);
     // print(userProvider);
-     SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
     final response = await http.post(
       Uri.parse('$uri/api/teams/join'),
       headers: <String, String>{
@@ -42,11 +42,7 @@ class TeamService {
     } else {
       callback(false);
     }
-
-
-
   }
-
 
   Future<void> CreateTeam({
     required BuildContext context,
@@ -54,14 +50,14 @@ class TeamService {
     required String TeamName,
     required String password,
     required Result callback,
-  }) async{
+  }) async {
     // final userProvider = Provider.of<UserProvider>(context, listen: false);
     // print(userProvider.user.token);
-         SharedPreferences prefs = await SharedPreferences.getInstance();
-         print(ManagerId);
-         print("+++++++++++");
-      String? token = prefs.getString('token');
-      final response = await http.post(
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print(ManagerId);
+    print("+++++++++++");
+    String? token = prefs.getString('token');
+    final response = await http.post(
       Uri.parse('$uri/api/teams/create'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -80,9 +76,8 @@ class TeamService {
     debugPrint(data.toString());
     if (data['isSuccess']) {
       callback(true);
-    }
-    else{
+    } else {
       callback(false);
-    } 
+    }
   }
 }
