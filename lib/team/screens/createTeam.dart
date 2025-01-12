@@ -4,6 +4,7 @@ import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
 import 'package:real_time_collaboration_application/kanban/screen/all-list.dart';
 import 'package:real_time_collaboration_application/model/user.dart';
+import 'package:real_time_collaboration_application/providers/teamProvider.dart';
 import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:real_time_collaboration_application/team/services/teamService.dart';
 import 'package:real_time_collaboration_application/utils/TextFormField.dart';
@@ -26,6 +27,7 @@ class _CreateTeamState extends State<CreateTeam> {
  
  Future<void> createTeam() async {
    final userprovider = Provider.of<UserProvider>(context,listen: false);
+   final teamProvider = Provider.of<TeamProvider>(context,listen: false);
     
    print(userprovider.user.username);
    print(userprovider.user.id);
@@ -40,7 +42,7 @@ class _CreateTeamState extends State<CreateTeam> {
    callback: (bool success){
       if(success){
         print("Team Created");
-        Navigator.pushNamed(context, AllTask.routeName);
+        Navigator.pushNamed(context, AllTask.routeName, arguments: teamProvider.team.id);
       }
       else{
         print("Team not Created");

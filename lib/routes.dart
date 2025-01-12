@@ -4,6 +4,7 @@ import 'package:real_time_collaboration_application/auth/screens/signUp.dart';
 import 'package:real_time_collaboration_application/chat/screen/chat_screen.dart';
 import 'package:real_time_collaboration_application/kanban/screen/all-list.dart';
 import 'package:real_time_collaboration_application/kanban/screen/baclog.dart';
+import 'package:real_time_collaboration_application/kanban/screen/complete-task-screen.dart';
 import 'package:real_time_collaboration_application/kanban/screen/review.dart';
 import 'package:real_time_collaboration_application/kanban/screen/to-do.dart';
 import 'package:real_time_collaboration_application/team/screens/createTeam.dart';
@@ -37,7 +38,7 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         settings: routeSettings,
         builder: (_) => const Joinorcreateteam(),
       );
-    case Backlog.routeName:
+     case Backlog.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
         builder: (_) =>  Backlog(),
@@ -52,18 +53,28 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         settings: routeSettings,
         builder: (_) =>  Review(),
       );
-    case AllTask.routeName:
+      case CompleteTask.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_) =>  AllTask(),
+        builder: (_) =>  CompleteTask(),
       );
-    case ChatScreen.routeName:
-  final args = routeSettings.arguments as String;
-  return MaterialPageRoute(
-    settings: routeSettings,
-    builder: (_) => ChatScreen(taskId: args),
-  );
+    case AllTask.routeName:
+      final args = routeSettings.arguments as String;
+      return MaterialPageRoute(
+        settings: routeSettings,
+        builder: (_) => AllTask(
+          teamId: args,
+        ),
+      );
 
+    case ChatScreen.routeName:
+      final args = routeSettings.arguments as Map<String, dynamic>;
+      String taskId = args['taskId']; // Extract taskId
+
+      return MaterialPageRoute(
+        settings: routeSettings,
+        builder: (_) => ChatScreen(taskId: taskId,),
+      );
 
     default:
       return MaterialPageRoute(

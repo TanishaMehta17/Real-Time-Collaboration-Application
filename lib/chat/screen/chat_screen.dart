@@ -11,7 +11,8 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatScreen extends StatefulWidget {
   final String taskId;
-  const ChatScreen({Key? key, required this.taskId}) : super(key: key);
+  const ChatScreen({Key? key, required this.taskId})
+      : super(key: key);
   static const String routeName = '/chat-screen';
 
   @override
@@ -33,7 +34,6 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     taskProvider = Provider.of<TaskProvider>(context, listen: false);
     userProvider = Provider.of<UserProvider>(context, listen: false);
-
     setupSocketConnection();
   }
 
@@ -130,6 +130,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    print("Nameeeeeeeeeeeeeeeeeeeeeeeee");
+    print(userProvider.user.username);  
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat Screen'),
@@ -196,10 +199,11 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           Text(
                             message['timestamp'] != null
-                  ? DateFormat('hh:mm a').format(
-                      DateTime.parse(message['timestamp']).toLocal(), // Convert to local time
-                    )
-                  : 'N/A',
+                                ? DateFormat('hh:mm a').format(
+                                    DateTime.parse(message['timestamp'])
+                                        .toLocal(), // Convert to local time
+                                  )
+                                : 'N/A',
                             textAlign: TextAlign.right,
                             style: const TextStyle(
                               color: Colors.grey,

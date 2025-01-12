@@ -1,13 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/auth/screens/signUp.dart';
 import 'package:real_time_collaboration_application/auth/service/authservice.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
-import 'package:real_time_collaboration_application/model/user.dart';
-import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:real_time_collaboration_application/team/screens/joinOrCreateTeam.dart';
 import 'package:real_time_collaboration_application/utils/TextFormField.dart';
 

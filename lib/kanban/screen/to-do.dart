@@ -4,6 +4,7 @@ import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/utils/customCard.dart';
+import 'package:real_time_collaboration_application/utils/custom_card_category.dart';
 import 'package:real_time_collaboration_application/utils/drawer.dart';
 
 
@@ -41,7 +42,7 @@ class ToDoScreen extends StatelessWidget {
       body: toDoTasks.isNotEmpty
           ? ListView.builder(
               itemCount: toDoTasks.length,
-              itemBuilder: (context, index) => CustomCard(task: toDoTasks[index]),
+              itemBuilder: (context, index) => CustomCardCategory(task: toDoTasks[index]),
             )
           : const Center(
               child: Text(

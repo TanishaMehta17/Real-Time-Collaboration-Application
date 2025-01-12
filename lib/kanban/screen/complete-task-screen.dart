@@ -10,20 +10,20 @@ import 'package:real_time_collaboration_application/utils/custom_card_category.d
 import 'package:real_time_collaboration_application/utils/drawer.dart';
 
 
-class Backlog extends StatelessWidget {
-  static const String routeName = '/backlog-screen';
+class CompleteTask extends StatelessWidget {
+  static const String routeName = '/complete-task-screen';
 
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
-    var backlogTasks = taskProvider.getTasksByCategory('backlog');
+    var completeTask = taskProvider.getTasksByCategory('complete');
     
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
       appBar: AppBar(
         title: const Row(
           children: [
-            Text('Backlog Tasks', style: RTSTypography.buttonText),
+            Text('Completed Tasks', style: RTSTypography.buttonText),
             SizedBox(
               width: 10,
             ),
@@ -42,14 +42,14 @@ class Backlog extends StatelessWidget {
         ),
       ),
       drawer: const CustomDrawer(),
-       body: backlogTasks.isNotEmpty
+       body: completeTask.isNotEmpty
           ? ListView.builder(
-              itemCount: backlogTasks.length,
-              itemBuilder: (context, index) => CustomCardCategory(task: backlogTasks[index]),
+              itemCount: completeTask.length,
+              itemBuilder: (context, index) => CustomCardCategory(task: completeTask[index]),
             )
           : const Center(
               child: Text(
-                'No Backlog Tasks',
+                'No Complete Tasks',
                 style: RTSTypography.buttonText,
               ),
             ),

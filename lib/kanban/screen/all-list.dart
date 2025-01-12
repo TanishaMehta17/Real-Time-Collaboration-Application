@@ -3,14 +3,18 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/common/typography.dart';
+import 'package:real_time_collaboration_application/global_variable.dart';
 import 'package:real_time_collaboration_application/kanban/services/taskservices.dart';
-import 'package:real_time_collaboration_application/model/task.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/providers/teamProvider.dart';
+import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:real_time_collaboration_application/utils/customCard.dart';
 import 'package:real_time_collaboration_application/utils/drawer.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class AllTask extends StatefulWidget {
+  String teamId;
+  AllTask({Key? key, required this.teamId}) : super(key: key);
   static const String routeName = '/all-task-screen';
 
   @override
@@ -22,8 +26,10 @@ class _AllTaskState extends State<AllTask> {
   final TextEditingController heading2 = TextEditingController();
   final TextEditingController bodyText1 = TextEditingController();
   final TextEditingController bodyText2 = TextEditingController();
+  final ScrollController scrollController = ScrollController();
   TaskService taskService = TaskService();
   String selectedDate = "Selcet Date";
+  late IO.Socket socket;
 
   List<String> selectedMembers = [];
   final _formKey = GlobalKey<FormState>();
@@ -47,13 +53,13 @@ class _AllTaskState extends State<AllTask> {
   }
 
   List<String> membersName = [];
+  List<Map<String, dynamic>> tasks = [];
 
   @override
   void initState() {
     super.initState();
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-
     taskService.getmembers(
       context: context,
       teamname: teamProvider.team.name,
@@ -70,21 +76,7 @@ class _AllTaskState extends State<AllTask> {
     );
     print("alll taskkkk");
     print(taskProvider.allTasks);
-    taskService.getTask(
-      context: context,
-      teamId: teamProvider.team.id,
-      callback: (success, tasks) {
-        if (success) {
-          print("Task fetched");
-          // print(tasks);
-          setState(() {
-            taskProvider.setTasks(tasks);
-          });
-        } else {
-          print("Task not fetched");
-        }
-      },
-    );
+    setupSocketConnection();
   }
 
   @override
@@ -93,7 +85,112 @@ class _AllTaskState extends State<AllTask> {
     heading2.dispose();
     bodyText1.dispose();
     bodyText2.dispose();
+    scrollController.dispose();
+    socket.dispose();
     super.dispose();
+  }
+ @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  // Emit to fetch tasks if not already loaded
+  if (tasks.isEmpty) {
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    socket.emit("getTask", teamProvider.team.id);
+     socket.on("tasks", (data) {
+        setState(() {
+          tasks = List<Map<String, dynamic>>.from(data);
+          taskProvider.setTasks(tasks);
+        });
+        scrollToBottom();
+      });
+  }
+}
+  void scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  void setupSocketConnection() {
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    socket = IO.io(
+      uri, // Replace with your backend URL
+      IO.OptionBuilder()
+          .setTransports(['websocket'])
+          .disableAutoConnect()
+          .build(),
+    );
+
+    socket.connect();
+
+    socket.onConnect((_) {
+      print("Connected to server");
+
+      print(teamProvider.team.id);
+
+      //Join the task room
+      socket.emit("joinTeam", teamProvider.team.id);
+
+      // Fetch existing tasks
+      socket.emit("getTask", teamProvider.team.id);
+
+      // Listen for existing tasks
+      socket.on("tasks", (data) {
+        setState(() {
+          tasks = List<Map<String, dynamic>>.from(data);
+          taskProvider.setTasks(tasks);
+        });
+        scrollToBottom();
+      });
+      
+      // Listen for new messages
+      socket.on("taskCreated", (data) {
+        setState(() {
+          tasks.add(data);
+        });
+        scrollToBottom();
+      });
+    });
+    
+      
+    socket.onDisconnect((_) => print("Disconnected from server"));
+  }
+
+  void addTasks() {
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+
+    final data = {
+      "title": heading1.text,
+      "description": bodyText1.text,
+      "description1": bodyText2.text,
+      "membersName": selectedMembers,
+      "teamId": teamProvider.team.id,
+      "type": heading2.text,
+      "status": selectedCategory,
+      "date": selectedDate,
+    };
+
+    // Emit task to the server
+    socket.emit("createTask", data);
+
+    // Add to categorizedTasks locally for immediate UI updates
+    setState(() {
+      heading1.clear();
+      heading2.clear();
+      bodyText1.clear();
+      bodyText2.clear();
+      selectedMembers.clear();
+      selectedCategory = 'To-Do';
+      selectedDate = "Selcet Date";
+    });
   }
 
   void _resetForm() {
@@ -101,68 +198,17 @@ class _AllTaskState extends State<AllTask> {
     heading2.clear();
     bodyText1.clear();
     bodyText2.clear();
-
     setState(() {
       selectedDate = "";
       selectedMembers.clear();
     });
   }
 
-  void addTasks() {
-    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-    print(selectedMembers);
-    taskService.CreateTask(
-        context: context,
-        TaskType: heading1.text,
-        TaskDecscription1: bodyText1.text,
-        TaskName: heading2.text,
-        date: selectedDate != 'Select Date' ? selectedDate : '',
-        TaskDescription: bodyText2.text,
-        TaskStatus: selectedCategory,
-        membersName: selectedMembers.toList(),
-        teamId: teamProvider.team.id,
-        callback: (bool success) {
-          if (success) {
-            print("Task Created");
-            taskService.getTask(
-              context: context,
-              teamId: teamProvider.team.id,
-              callback: (success, tasks) {
-                if (success) {
-                  print("Task fetched");
-                  print(tasks);
-                  setState(() {
-                    taskProvider.setTasks(tasks);
-                  });
-                } else {
-                  print("Task not fetched");
-                }
-              },
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Task not created',
-                  style: RTSTypography.smallText2.copyWith(color: white),
-                ),
-                backgroundColor: errorPrimaryColor,
-              ),
-            );
-
-            print("Task not Created");
-          }
-        });
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
-    final taskProvider = Provider.of<TaskProvider>(context);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-    List<Task> filteredTasks = taskProvider.allTasks; // Get all tasks here
+    final userProvider = Provider.of<UserProvider>(context);
+    final teamProvider = Provider.of<TeamProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -187,59 +233,60 @@ class _AllTaskState extends State<AllTask> {
         ),
       ),
       drawer: const CustomDrawer(),
-      body: taskProvider.task == null
+      body: tasks.isEmpty
           ? const Center(child: Text('No tasks available.'))
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  ...filteredTasks
-                      .map((task) => CustomCard(task: task))
-                      .toList(),
-                  //CustomCard(task: taskProvider.task),
-                ],
-              ),
+          : ListView.builder(
+              controller: scrollController,
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                final task = tasks[index];
+                return CustomCard(task: task, socket: socket, tasks: tasks,);
+              },
             ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: textColor2,
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Add New Task',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              content: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTextField(heading1, 'Heading 1'),
-                      const SizedBox(height: 16),
-                      _buildTextField(heading2, 'Heading 2'),
-                      const SizedBox(height: 16),
-                      _buildTextField(bodyText1, 'Body Text 1'),
-                      const SizedBox(height: 16),
-                      _buildTextField(bodyText2, 'Body Text 2'),
-                      const SizedBox(height: 16),
-                      _buildDropdown(),
-                      const SizedBox(height: 16),
-                      _buildDatePicker(),
-                      const SizedBox(height: 16),
-                      _buildCategoryDropdown(),
-                      const SizedBox(height: 24),
-                      _buildSubmitButton(),
-                    ],
+      floatingActionButton: userProvider.user.id == teamProvider.team.managerId
+          ? FloatingActionButton(
+              backgroundColor: textColor2,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Add New Task',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    content: SingleChildScrollView(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildTextField(heading1, 'Heading 1'),
+                            const SizedBox(height: 16),
+                            _buildTextField(heading2, 'Heading 2'),
+                            const SizedBox(height: 16),
+                            _buildTextField(bodyText1, 'Body Text 1'),
+                            const SizedBox(height: 16),
+                            _buildTextField(bodyText2, 'Body Text 2'),
+                            const SizedBox(height: 16),
+                            _buildDropdown(),
+                            const SizedBox(height: 16),
+                            _buildDatePicker(),
+                            const SizedBox(height: 16),
+                            _buildCategoryDropdown(),
+                            const SizedBox(height: 24),
+                            _buildSubmitButton(),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                );
+              },
+              child: const Icon(
+                Icons.add,
+                color: white,
               ),
-            ),
-          );
-        },
-        child: const Icon(
-          Icons.add,
-          color: white,
-        ),
-      ),
+            )
+          : null,
     );
   }
 
