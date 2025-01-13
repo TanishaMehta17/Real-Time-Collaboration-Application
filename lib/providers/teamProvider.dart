@@ -23,4 +23,14 @@ class TeamProvider  extends ChangeNotifier{
     _team = team;
     notifyListeners();
   }
+   void clearTeamData() {
+    _team = Team(
+      id: '',
+    name: '',
+    password: '',
+    managerId: '',
+    members: List.empty(),
+    ); // Reset the team data
+    notifyListeners();
+  }
 }

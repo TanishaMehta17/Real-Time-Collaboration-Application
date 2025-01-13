@@ -10,6 +10,8 @@ import 'package:real_time_collaboration_application/providers/teamProvider.dart'
 import 'package:real_time_collaboration_application/providers/userProvider.dart';
 import 'package:real_time_collaboration_application/utils/customCard.dart';
 import 'package:real_time_collaboration_application/utils/drawer.dart';
+import 'package:real_time_collaboration_application/utils/membersDropdown.dart';
+import 'package:real_time_collaboration_application/utils/textField.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class AllTask extends StatefulWidget {
@@ -52,6 +54,16 @@ class _AllTaskState extends State<AllTask> {
     }
   }
 
+  void leaveTeam() {
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    final userProvieder = Provider.of<UserProvider>(context, listen: false);
+    // Emit 'leaveTeam' event to the server with the current team ID
+    socket.emit('leaveTeam', [teamProvider.team.id, userProvieder.user.id]);
+
+    // Optionally, you can clear the team-related data from your providers to reset the state
+    teamProvider.clearTeamData();
+  }
+
   List<String> membersName = [];
   List<Map<String, dynamic>> tasks = [];
 
@@ -81,6 +93,7 @@ class _AllTaskState extends State<AllTask> {
 
   @override
   void dispose() {
+    leaveTeam();
     heading1.dispose();
     heading2.dispose();
     bodyText1.dispose();
@@ -89,23 +102,25 @@ class _AllTaskState extends State<AllTask> {
     socket.dispose();
     super.dispose();
   }
- @override
-void didChangeDependencies() {
-  super.didChangeDependencies();
-  // Emit to fetch tasks if not already loaded
-  if (tasks.isEmpty) {
-    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-    socket.emit("getTask", teamProvider.team.id);
-     socket.on("tasks", (data) {
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Emit to fetch tasks if not already loaded
+    if (tasks.isEmpty) {
+      final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+      final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+      socket.emit("getTask", teamProvider.team.id);
+      socket.on("tasks", (data) {
         setState(() {
           tasks = List<Map<String, dynamic>>.from(data);
           taskProvider.setTasks(tasks);
         });
         scrollToBottom();
       });
+    }
   }
-}
+
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (scrollController.hasClients) {
@@ -150,7 +165,7 @@ void didChangeDependencies() {
         });
         scrollToBottom();
       });
-      
+
       // Listen for new messages
       socket.on("taskCreated", (data) {
         setState(() {
@@ -159,8 +174,7 @@ void didChangeDependencies() {
         scrollToBottom();
       });
     });
-    
-      
+
     socket.onDisconnect((_) => print("Disconnected from server"));
   }
 
@@ -240,7 +254,11 @@ void didChangeDependencies() {
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 final task = tasks[index];
-                return CustomCard(task: task, socket: socket, tasks: tasks,);
+                return CustomCard(
+                  task: task,
+                  socket: socket,
+                  tasks: tasks,
+                );
               },
             ),
       floatingActionButton: userProvider.user.id == teamProvider.team.managerId
@@ -259,13 +277,17 @@ void didChangeDependencies() {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildTextField(heading1, 'Heading 1'),
+                            CustomTextFormField(
+                                controller: heading1, label: 'Heading 1'),
                             const SizedBox(height: 16),
-                            _buildTextField(heading2, 'Heading 2'),
+                            CustomTextFormField(
+                                controller: heading2, label: 'Heading 2'),
                             const SizedBox(height: 16),
-                            _buildTextField(bodyText1, 'Body Text 1'),
+                            CustomTextFormField(
+                                controller: bodyText1, label: 'Body Text 1'),
                             const SizedBox(height: 16),
-                            _buildTextField(bodyText2, 'Body Text 2'),
+                            CustomTextFormField(
+                                controller: bodyText2, label: 'Body Text 2'),
                             const SizedBox(height: 16),
                             _buildDropdown(),
                             const SizedBox(height: 16),
@@ -287,35 +309,6 @@ void didChangeDependencies() {
               ),
             )
           : null,
-    );
-  }
-
-  Widget _buildTextField(TextEditingController controller, String label) {
-    return TextFormField(
-      controller: controller,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '$label cannot be empty',
-                style: RTSTypography.smallText2.copyWith(color: white),
-              ),
-              backgroundColor: errorPrimaryColor,
-            ),
-          );
-          return ''; // Return empty string to show the error
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: textColor2),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        prefixIcon: const Icon(Icons.edit, color: textColor2),
-      ),
     );
   }
 
