@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:real_time_collaboration_application/common/colors.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextFormFieldNew extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
   final String? hintText;
@@ -10,7 +10,7 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final Widget? suffixIcon;
 
-  const CustomTextField({
+  const CustomTextFormFieldNew({
     Key? key,
     required this.controller,
     required this.labelText,
@@ -28,22 +28,22 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: const TextStyle(color: white),
+        labelStyle: const TextStyle(color: textColor1),
         hintText: hintText,
-        hintStyle: const TextStyle(color: white),
+        hintStyle: const TextStyle(color: textColor1),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: white),
+          borderSide: const BorderSide(color: textColor1),
           borderRadius: BorderRadius.circular(8.0),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: white, width: 2.0),
+          borderSide: const BorderSide(color: textColor1, width: 2.0),
           borderRadius: BorderRadius.circular(8.0),
         ),
         filled: true,
         fillColor: Colors.transparent,
         suffixIcon: suffixIcon,
       ),
-      style: const TextStyle(color: white),
+      style: const TextStyle(color: black),
       keyboardType: keyboardType,
       validator: validator,
     );

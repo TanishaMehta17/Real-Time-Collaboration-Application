@@ -22,3 +22,4 @@ const Color boxShadow = Colors.grey;
 const Color mobileChatBoxColor = Color.fromRGBO(31, 44, 52, 1);
 const Color messageColor = Color.fromRGBO(5, 96, 98, 1);
 const Color backgroundColor = Color.fromRGBO(19, 28, 33, 1);
+const Color black = Colors.black;
