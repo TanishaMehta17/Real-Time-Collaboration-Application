@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/auth/screens/login.dart';
 import 'package:real_time_collaboration_application/auth/service/authservice.dart';
 import 'package:real_time_collaboration_application/chat/screen/chat_screen.dart';
-import 'package:real_time_collaboration_application/kanban/screen/all-list.dart';
 import 'package:real_time_collaboration_application/model/user.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/providers/teamProvider.dart';
@@ -61,7 +60,7 @@ class _MyAppState extends State<MyApp> {
       home: isUserLoggedIn
           ? Joinorcreateteam()
           : const LoginPage(), // Correct context access for providers
-      // home: LoginPage(),
+      // home: ChatScreen(),
       onGenerateRoute: (settings) => generateRoute(settings),
     );
   }

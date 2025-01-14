@@ -111,13 +111,13 @@ class _AllTaskState extends State<AllTask> {
       final teamProvider = Provider.of<TeamProvider>(context, listen: false);
       final taskProvider = Provider.of<TaskProvider>(context, listen: false);
       socket.emit("getTask", teamProvider.team.id);
-      socket.on("tasks", (data) {
-        setState(() {
-          tasks = List<Map<String, dynamic>>.from(data);
-          taskProvider.setTasks(tasks);
-        });
-        scrollToBottom();
-      });
+      // socket.on("tasks", (data) {
+      //   setState(() {
+      //     tasks = List<Map<String, dynamic>>.from(data);
+      //     taskProvider.setTasks(tasks);
+      //   });
+      //   scrollToBottom();
+      // });
     }
   }
 
