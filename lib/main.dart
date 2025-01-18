@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:real_time_collaboration_application/auth/screens/login.dart';
 import 'package:real_time_collaboration_application/auth/service/authservice.dart';
 import 'package:real_time_collaboration_application/chat/screen/chat_screen.dart';
+import 'package:real_time_collaboration_application/common/socket.dart';
 import 'package:real_time_collaboration_application/model/user.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/providers/teamProvider.dart';
@@ -25,6 +26,9 @@ void main() {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
         ChangeNotifierProvider(create: (_)=> TeamProvider()),
+         Provider<SocketService>(
+          create: (_) => SocketService()..initSocket(),
+        ),
       ],
       child: const MyApp(),
     ),

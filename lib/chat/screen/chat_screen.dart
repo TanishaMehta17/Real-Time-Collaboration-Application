@@ -7,12 +7,11 @@ import 'package:real_time_collaboration_application/common/colors.dart';
 import 'package:real_time_collaboration_application/global_variable.dart';
 import 'package:real_time_collaboration_application/providers/taskProvider.dart';
 import 'package:real_time_collaboration_application/providers/userProvider.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:real_time_collaboration_application/common/socket.dart'; // Import SocketService
 
 class ChatScreen extends StatefulWidget {
   final String taskId;
-  const ChatScreen({Key? key, required this.taskId})
-      : super(key: key);
+  const ChatScreen({Key? key, required this.taskId}) : super(key: key);
   static const String routeName = '/chat-screen';
 
   @override
@@ -25,23 +24,28 @@ class _ChatScreenState extends State<ChatScreen> {
   List<Map<String, dynamic>> messages = [];
   bool isShowEmojiContainer = false;
   bool isShowSendButton = false;
-  late IO.Socket socket;
   late TaskProvider taskProvider;
   late UserProvider userProvider;
+  late SocketService socketService;
 
   @override
   void initState() {
     super.initState();
     taskProvider = Provider.of<TaskProvider>(context, listen: false);
     userProvider = Provider.of<UserProvider>(context, listen: false);
+    socketService = Provider.of<SocketService>(context, listen: false);
     setupSocketConnection();
   }
 
   @override
   void dispose() {
+   // socketService.leaveRoom(widget.taskId);
+  //CHANGES  
+    socketService.leaveTask(widget.taskId, userProvider.user.id);
+    socketService.offEvent("messages"); // Remove event listeners
+    socketService.offEvent("messageCreated");
     messageController.dispose();
     scrollController.dispose();
-    socket.dispose();
     super.dispose();
   }
 
@@ -58,48 +62,28 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void setupSocketConnection() {
-    socket = IO.io(
-      uri, // Replace with your backend URL
-      IO.OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect()
-          .build(),
-    );
+    socketService.joinRoom(widget.taskId);
 
-    socket.connect();
-
-    socket.onConnect((_) {
-      print("Connected to server");
-
-      print(widget.taskId);
-
-      // Join the task room
-      socket.emit("joinTask", widget.taskId);
-
-      // Fetch existing messages
-      socket.emit("getmessages", widget.taskId);
-
-      // Listen for existing messages
-      socket.on("messages", (data) {
+    socketService.onEvent("messages", (data) {
+      if (mounted) {
         setState(() {
           messages = List<Map<String, dynamic>>.from(data);
-          print("helllllllllllllllllllllllllllllllllllllllll");
-          print(messages);
         });
         scrollToBottom();
-      });
-
-      // Listen for new messages
-      socket.on("messageCreated", (data) {
-        print(data);
+      }
+    });
+    
+     socketService.onEvent("messageCreated", (data) {
+       if (mounted) {
         setState(() {
           messages.add(data);
+          
         });
         scrollToBottom();
+       }
       });
-    });
 
-    socket.onDisconnect((_) => print("Disconnected from server"));
+    socketService.emitEvent("getmessages", widget.taskId);
   }
 
   void sendTextMessage() {
@@ -108,13 +92,12 @@ class _ChatScreenState extends State<ChatScreen> {
       final data = {
         "taskId": widget.taskId,
         "userId": userProvider.user.id,
-        "content": message,
+        "message": message,
         "username": userProvider.user.username,
         "timestamp": DateTime.now().toUtc().toIso8601String(),
       };
-
-      socket.emit("createmessage", data);
-
+      socketService.emitEvent("createmessage", data);
+     
       setState(() {
         messageController.clear();
         isShowSendButton = false;
@@ -131,8 +114,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    print("Nameeeeeeeeeeeeeeeeeeeeeeeee");
-    print(userProvider.user.username);  
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat Screen'),

@@ -12,7 +12,7 @@ import 'package:real_time_collaboration_application/utils/customCard.dart';
 import 'package:real_time_collaboration_application/utils/drawer.dart';
 import 'package:real_time_collaboration_application/utils/membersDropdown.dart';
 import 'package:real_time_collaboration_application/utils/textField.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:real_time_collaboration_application/common/socket.dart'; // Import SocketService
 
 class AllTask extends StatefulWidget {
   String teamId;
@@ -31,7 +31,7 @@ class _AllTaskState extends State<AllTask> {
   final ScrollController scrollController = ScrollController();
   TaskService taskService = TaskService();
   String selectedDate = "Selcet Date";
-  late IO.Socket socket;
+  late SocketService socketService;
 
   List<String> selectedMembers = [];
   final _formKey = GlobalKey<FormState>();
@@ -56,9 +56,9 @@ class _AllTaskState extends State<AllTask> {
 
   void leaveTeam() {
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-    final userProvieder = Provider.of<UserProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     // Emit 'leaveTeam' event to the server with the current team ID
-    socket.emit('leaveTeam', [teamProvider.team.id, userProvieder.user.id]);
+    socketService.leaveRoom(teamProvider.team.id);
 
     // Optionally, you can clear the team-related data from your providers to reset the state
     teamProvider.clearTeamData();
@@ -72,6 +72,7 @@ class _AllTaskState extends State<AllTask> {
     super.initState();
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    socketService = Provider.of<SocketService>(context, listen: false);
     taskService.getmembers(
       context: context,
       teamname: teamProvider.team.name,
@@ -99,7 +100,6 @@ class _AllTaskState extends State<AllTask> {
     bodyText1.dispose();
     bodyText2.dispose();
     scrollController.dispose();
-    socket.dispose();
     super.dispose();
   }
 
@@ -110,14 +110,14 @@ class _AllTaskState extends State<AllTask> {
     if (tasks.isEmpty) {
       final teamProvider = Provider.of<TeamProvider>(context, listen: false);
       final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-      socket.emit("getTask", teamProvider.team.id);
-      // socket.on("tasks", (data) {
-      //   setState(() {
-      //     tasks = List<Map<String, dynamic>>.from(data);
-      //     taskProvider.setTasks(tasks);
-      //   });
-      //   scrollToBottom();
-      // });
+      socketService.emitEvent("getTask", teamProvider.team.id);
+      socketService.onEvent("tasks", (data) {
+        setState(() {
+          tasks = List<Map<String, dynamic>>.from(data);
+          taskProvider.setTasks(tasks);
+        });
+        scrollToBottom();
+      });
     }
   }
 
@@ -136,46 +136,27 @@ class _AllTaskState extends State<AllTask> {
   void setupSocketConnection() {
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-    socket = IO.io(
-      uri, // Replace with your backend URL
-      IO.OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect()
-          .build(),
-    );
+    final socket = socketService.socket;
+    print("Joining room");
+    socketService.joinTeam(teamProvider.team.id);
 
-    socket.connect();
-
-    socket.onConnect((_) {
-      print("Connected to server");
-
-      print(teamProvider.team.id);
-
-      //Join the task room
-      socket.emit("joinTeam", teamProvider.team.id);
-
-      // Fetch existing tasks
-      socket.emit("getTask", teamProvider.team.id);
-
-      // Listen for existing tasks
-      socket.on("tasks", (data) {
-        setState(() {
-          tasks = List<Map<String, dynamic>>.from(data);
-          taskProvider.setTasks(tasks);
-        });
-        scrollToBottom();
+    socketService.onEvent("tasks", (data) {
+      setState(() {
+        tasks = List<Map<String, dynamic>>.from(data);
+        taskProvider.setTasks(tasks);
       });
-
-      // Listen for new messages
-      socket.on("taskCreated", (data) {
-        setState(() {
-          tasks.add(data);
-        });
-        scrollToBottom();
-      });
+      scrollToBottom();
     });
 
-    socket.onDisconnect((_) => print("Disconnected from server"));
+    socketService.onEvent("taskCreated", (data) {
+      print(data);
+      setState(() {
+        tasks.add(data);
+      });
+      scrollToBottom();
+    });
+
+    socketService.emitEvent("getTask", teamProvider.team.id);
   }
 
   void addTasks() {
@@ -193,8 +174,7 @@ class _AllTaskState extends State<AllTask> {
     };
 
     // Emit task to the server
-    socket.emit("createTask", data);
-
+    socketService.emitEvent("createTask", data);
     // Add to categorizedTasks locally for immediate UI updates
     setState(() {
       heading1.clear();
@@ -256,7 +236,7 @@ class _AllTaskState extends State<AllTask> {
                 final task = tasks[index];
                 return CustomCard(
                   task: task,
-                  socket: socket,
+                  socket: socketService.socket,
                   tasks: tasks,
                 );
               },
@@ -364,7 +344,9 @@ class _AllTaskState extends State<AllTask> {
     );
   }
 
-  Widget _buildDatePicker() {
+
+
+Widget _buildDatePicker() {
     return GestureDetector(
       onTap: () => _selectDate(context),
       child: Container(
