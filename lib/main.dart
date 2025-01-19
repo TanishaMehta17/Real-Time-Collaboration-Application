@@ -25,8 +25,8 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
-        ChangeNotifierProvider(create: (_)=> TeamProvider()),
-         Provider<SocketService>(
+        ChangeNotifierProvider(create: (_) => TeamProvider()),
+        Provider<SocketService>(
           create: (_) => SocketService()..initSocket(),
         ),
       ],
@@ -54,7 +54,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     print(Provider.of<UserProvider>(context).user.id);
-    bool isUserLoggedIn = Provider.of<UserProvider>(context).user.token.isNotEmpty;
+    bool isUserLoggedIn =
+        Provider.of<UserProvider>(context).user.token.isNotEmpty;
     print(isUserLoggedIn);
 
     return MaterialApp(
@@ -68,5 +69,4 @@ class _MyAppState extends State<MyApp> {
       onGenerateRoute: (settings) => generateRoute(settings),
     );
   }
-    
 }
