@@ -20,6 +20,6 @@ const Color headingColor2 = Color(0XFFB02626);
 const Color errorPrimaryColor = Color(0xFFD73B26);
 const Color boxShadow = Colors.grey;
 const Color mobileChatBoxColor = Color.fromRGBO(31, 44, 52, 1);
-const Color messageColor = Color.fromRGBO(5, 96, 98, 1);
+const Color messageColor = Color(0XFF1559EA);
 const Color backgroundColor = Color.fromRGBO(19, 28, 33, 1);
 const Color black = Colors.black;

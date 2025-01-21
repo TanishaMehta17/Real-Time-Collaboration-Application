@@ -227,57 +227,109 @@ class _AllTaskState extends State<AllTask> {
         ),
       ),
       drawer: const CustomDrawer(),
-      body: tasks.isEmpty
-          ? const Center(child: Text('No tasks available.'))
-          : ListView.builder(
-              controller: scrollController,
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                final task = tasks[index];
-                return CustomCard(
-                  task: task,
-                  socket: socketService.socket,
-                  tasks: tasks,
-                );
-              },
-            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              gradientColor1,
+              gradientColor2,
+              gradientColor1,
+            ],
+            stops: [0.2, 0.5, 1.0],
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+          ),
+        ),
+        child: tasks.isEmpty
+            ? const Center(child: Text('No tasks available.'))
+            : ListView.builder(
+                controller: scrollController,
+                itemCount: tasks.length,
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+                  return CustomCard(
+                    task: task,
+                    socket: socketService.socket,
+                    tasks: tasks,
+                  );
+                },
+              ),
+      ),
       floatingActionButton: userProvider.user.id == teamProvider.team.managerId
           ? FloatingActionButton(
               backgroundColor: textColor2,
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Add New Task',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    content: SingleChildScrollView(
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomTextFormField(
-                                controller: heading1, label: 'Heading 1'),
-                            const SizedBox(height: 16),
-                            CustomTextFormField(
-                                controller: heading2, label: 'Heading 2'),
-                            const SizedBox(height: 16),
-                            CustomTextFormField(
-                                controller: bodyText1, label: 'Body Text 1'),
-                            const SizedBox(height: 16),
-                            CustomTextFormField(
-                                controller: bodyText2, label: 'Body Text 2'),
-                            const SizedBox(height: 16),
-                            _buildDropdown(),
-                            const SizedBox(height: 16),
-                            _buildDatePicker(),
-                            const SizedBox(height: 16),
-                            _buildCategoryDropdown(),
-                            const SizedBox(height: 24),
-                            _buildSubmitButton(),
+                  builder: (context) => Dialog(
+                    backgroundColor: Colors.transparent,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          colors: [
+                            Color.fromRGBO(241, 236, 236, 0.7),
+                            Color.fromRGBO(255, 255, 255, 0.9),
                           ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
+                      ),
+                      padding: const EdgeInsets.all(
+                          16), // Add padding to make the content look better
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Add New Task',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 16),
+                          Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: CustomTextFormField(
+                                        controller: heading1,
+                                        label: 'Heading 1',
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                        width:
+                                            8), // Add spacing between the fields
+                                    Expanded(
+                                      child: CustomTextFormField(
+                                        controller: heading2,
+                                        label: 'Heading 2',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                CustomTextFormField(
+                                    controller: bodyText1,
+                                    label: 'Body Text 1'),
+                                const SizedBox(height: 16),
+                                CustomTextFormField(
+                                    controller: bodyText2,
+                                    label: 'Body Text 2'),
+                                const SizedBox(height: 16),
+                                _buildDropdown(),
+                                const SizedBox(height: 16),
+                                _buildDatePicker(),
+                                const SizedBox(height: 16),
+                                _buildCategoryDropdown(),
+                                const SizedBox(height: 24),
+                                _buildSubmitButton(),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -344,9 +396,7 @@ class _AllTaskState extends State<AllTask> {
     );
   }
 
-
-
-Widget _buildDatePicker() {
+  Widget _buildDatePicker() {
     return GestureDetector(
       onTap: () => _selectDate(context),
       child: Container(

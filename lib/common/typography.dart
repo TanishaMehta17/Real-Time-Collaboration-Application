@@ -24,10 +24,10 @@ class RTSTypography {
   static const TextStyle smallText = TextStyle(
     fontFamily: 'SFProDisplay',
     color: primaryColor,
-    fontSize: 16, // Material Design 3 convention
+    fontSize: 14, // Material Design 3 convention
     fontWeight: FontWeight.w400,
   );
-   static const TextStyle smallText1 = TextStyle(
+  static const TextStyle smallText1 = TextStyle(
     fontFamily: 'SFProDisplay',
     color: textColor,
     fontSize: 16, // Material Design 3 convention
@@ -39,7 +39,7 @@ class RTSTypography {
     fontSize: 14, // Material Design 3 convention
     fontWeight: FontWeight.w400,
   );
-   static const TextStyle bold = TextStyle(
+  static const TextStyle bold = TextStyle(
     fontFamily: 'SFProDisplay',
     color: primaryColor,
     fontSize: 16, // Material Design 3 convention
