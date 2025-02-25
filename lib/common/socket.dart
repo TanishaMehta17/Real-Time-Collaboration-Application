@@ -1,4 +1,3 @@
-import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:real_time_collaboration_application/global_variable.dart';
 
