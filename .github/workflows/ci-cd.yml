@@ -1,34 +1,29 @@
-name: CI/CD Pipeline with Codecov
+name: Run tests and upload coverage
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: 
+  push
 
 jobs:
   test:
+    name: Run tests and collect coverage
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: 18
+          fetch-depth: 0
 
-      - name: Install Dependencies
+      - name: Set up Node
+        uses: actions/setup-node@v4
+
+      - name: Install dependencies
         run: npm install
 
-      - name: Run Tests and Generate Coverage
-        run: npm test -- --coverage
+      - name: Run tests
+        run: npx jest --coverage
 
-      - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          fail_ci_if_error: true
+          slug: TanishaMehta17/Real-Time-Collaboration-Application
